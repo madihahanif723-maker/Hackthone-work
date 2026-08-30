@@ -668,7 +668,7 @@
                     .from('profiles')
                     .select('*')
                     .eq('user_id', currentUser.id)
-                    .single();
+                    .maybeSingle();
                 if (error) throw error;
                 currentProfile = data;
                 if (currentProfile.role === 'provider') {
