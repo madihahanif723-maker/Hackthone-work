@@ -8,1768 +8,1155 @@
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
-                            400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
-                            800: '#1e40af', 900: '#1e3a8a',
-                        }
-                    }
-                }
-            }
+            theme: { extend: { colors: { primary: {
+                50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',
+                500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a'
+            } } } }
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        .glass {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-        }
-        .dark .glass {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
-        }
-        .fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .glass { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); }
+        .dark .glass { background: rgba(15,23,42,0.85); backdrop-filter: blur(12px); }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-100 font-sans transition-colors duration-300 min-h-screen flex flex-col">
 
-    <nav class="sticky top-0 z-40 glass border-b border-gray-200 dark:border-slate-800 transition-colors">
+<nav class="sticky top-0 z-40 glass border-b border-gray-200 dark:border-slate-800 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showPage('home')">
+                <div class="w-10 h-10 rounded-xl bg-primary-600 text-white flex items-center justify-center font-bold text-xl shadow-lg shadow-primary-500/30">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">QUICKServe</span>
+            </div>
+            <div class="hidden md:flex items-center space-x-6 text-sm font-medium">
+                <button onclick="showPage('home')" class="hover:text-primary-600 transition">Home</button>
+                <a href="#categories" onclick="showPage('home')" class="hover:text-primary-600 transition">Services</a>
+                <a href="#providers" onclick="showPage('home')" class="hover:text-primary-600 transition">Providers</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-3">
+                <button onclick="toggleTheme()" class="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
+                <div class="relative" id="bell-wrap-desktop" style="display:none;">
+                    <button id="bell-btn" class="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition relative">
+                        <i class="fa-solid fa-bell"></i>
+                        <span id="bell-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">0</span>
+                    </button>
+                    <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 max-h-96 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col z-50">
+                        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700">
+                            <h4 class="font-bold text-sm">Notifications</h4>
+                            <button id="mark-all-btn" class="text-xs font-semibold text-primary-600 hover:underline">Mark all as read</button>
+                        </div>
+                        <div id="notif-list" class="overflow-y-auto"></div>
+                    </div>
+                </div>
+                <div id="nav-auth-container" class="flex items-center space-x-2"></div>
+            </div>
+            <div class="flex items-center space-x-2 md:hidden">
+                <button onclick="toggleTheme()" class="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300">
+                    <i id="theme-icon-mobile" class="fa-solid fa-moon"></i>
+                </button>
+                <button onclick="toggleMobileMenu()" class="p-2 text-gray-600 dark:text-gray-300 focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pt-2 pb-4 space-y-2">
+        <button onclick="showPage('home'); toggleMobileMenu()" class="block w-full text-left py-2 hover:text-primary-600">Home</button>
+        <a href="#categories" onclick="toggleMobileMenu()" class="block py-2 hover:text-primary-600">Services</a>
+        <a href="#providers" onclick="toggleMobileMenu()" class="block py-2 hover:text-primary-600">Providers</a>
+        <div id="mobile-auth-container" class="pt-2 border-t border-gray-100 dark:border-slate-800 space-y-2"></div>
+    </div>
+</nav>
+
+<main class="flex-grow">
+    <div id="page-home" class="fade-in">
+        <section class="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <span class="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/50 rounded-full border border-primary-200 dark:border-primary-800">Premium Home Services</span>
+                        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mt-4 mb-6 leading-tight">
+                            Trusted Professionals.<br>
+                            <span class="bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">Quality Service.</span> Right at Home.
+                        </h1>
+                        <p class="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-xl">Find reliable local professionals for all your home service needs.</p>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <a href="#providers" class="px-6 py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/25 transition text-center">Find a Service</a>
+                            <button onclick="openRegisterModal('provider')" class="px-6 py-3.5 border border-gray-300 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-800 font-semibold rounded-xl transition text-center">Become a Provider</button>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-primary-500 to-indigo-500 rounded-2xl blur opacity-20"></div>
+                        <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&q=80&w=800" alt="Home Repair" class="relative rounded-2xl shadow-2xl object-cover w-full h-[450px]">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="categories" class="py-16 bg-white dark:bg-slate-800/50 transition-colors">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <h2 class="text-3xl font-bold">Explore Our Services</h2>
+                    <p class="text-gray-600 dark:text-gray-400 mt-2">Find experts in every category.</p>
+                </div>
+                <div id="categories-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+            </div>
+        </section>
+
+        <section id="providers" class="py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold">Top Rated Professionals</h2>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">Book vetted local providers directly.</p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                    <input type="text" id="search-input" oninput="filterProviders()" placeholder="Search service or provider..." class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    <select id="category-filter" onchange="filterProviders()" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="All">All Categories</option>
+                        <option>Electrician</option><option>Plumber</option><option>Carpenter</option>
+                        <option>Cleaner</option><option>Painter</option><option>AC Technician</option>
+                        <option>Appliance Repair</option><option>Home Tutor</option>
+                    </select>
+                    <select id="location-filter" onchange="filterProviders()" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="All">All Cities</option>
+                        <option>Karachi</option><option>Lahore</option><option>Islamabad</option><option>Rawalpindi</option>
+                    </select>
+                    <select id="rating-filter" onchange="filterProviders()" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="0">All Ratings</option>
+                        <option value="4">4.0+ Rating</option>
+                        <option value="4.5">4.5+ Rating</option>
+                    </select>
+                    <select id="sort-filter" onchange="filterProviders()" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="recommended">Recommended</option>
+                        <option value="rating">Highest Rated</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                    </select>
+                </div>
+                <div id="providers-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            </div>
+        </section>
+
+        <section class="py-16 bg-gradient-to-r from-primary-600 to-indigo-700 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl font-bold mb-4">Turn Your Skills Into Opportunities</h2>
+                <p class="text-primary-100 max-w-2xl mx-auto mb-8">Join QUICKServe and connect with local clients.</p>
+                <button onclick="openRegisterModal('provider')" class="px-8 py-3.5 bg-white text-primary-600 font-bold rounded-xl shadow-lg hover:bg-gray-100 transition">Become a Service Provider</button>
+            </div>
+        </section>
+    </div>
+
+    <div id="page-customer-dashboard" class="hidden fade-in py-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center space-x-3 cursor-pointer" onclick="showPage('home')">
-                    <div class="w-10 h-10 rounded-xl bg-primary-600 text-white flex items-center justify-center font-bold text-xl shadow-lg shadow-primary-500/30">
-                        <i class="fa-solid fa-bolt"></i>
-                    </div>
-                    <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">QUICKServe</span>
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold">Customer Dashboard</h1>
+                <p class="text-gray-600 dark:text-gray-400">Welcome back, <span id="customer-dashboard-name" class="font-semibold text-primary-600">User</span></p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700"><p class="text-xs text-gray-500">Total Bookings</p><p id="cust-stat-total" class="text-2xl font-bold mt-1">0</p></div>
+                <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700"><p class="text-xs text-yellow-500">Pending</p><p id="cust-stat-pending" class="text-2xl font-bold mt-1">0</p></div>
+                <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700"><p class="text-xs text-blue-500">In Progress</p><p id="cust-stat-progress" class="text-2xl font-bold mt-1">0</p></div>
+                <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700"><p class="text-xs text-green-500">Completed</p><p id="cust-stat-completed" class="text-2xl font-bold mt-1">0</p></div>
+            </div>
+            <h2 class="text-xl font-bold mb-4">My Bookings</h2>
+            <div id="customer-bookings-list" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <div id="page-provider-dashboard" class="hidden fade-in py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold">Provider Dashboard</h1>
+                    <p class="text-gray-600 dark:text-gray-400">Welcome back, <span id="provider-dashboard-name" class="font-semibold text-primary-600">Provider</span></p>
                 </div>
-
-                <div class="hidden md:flex items-center space-x-6 text-sm font-medium">
-                    <button onclick="showPage('home')" class="hover:text-primary-600 transition">Home</button>
-                    <a href="#categories" onclick="showPage('home')" class="hover:text-primary-600 transition">Services</a>
-                    <a href="#how-it-works" onclick="showPage('home')" class="hover:text-primary-600 transition">How It Works</a>
-                    <a href="#providers" onclick="showPage('home')" class="hover:text-primary-600 transition">Providers</a>
-                    <a href="#why-us" onclick="showPage('home')" class="hover:text-primary-600 transition">About</a>
-                </div>
-
-                <div class="hidden md:flex items-center space-x-3">
-                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition">
-                        <i id="theme-icon" class="fa-solid fa-moon"></i>
-                    </button>
-
-                    <div id="nav-auth-container" class="flex items-center space-x-2"></div>
-                </div>
-
-                <div class="flex items-center space-x-2 md:hidden">
-                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300">
-                        <i id="theme-icon-mobile" class="fa-solid fa-moon"></i>
-                    </button>
-                    <button onclick="toggleMobileMenu()" class="p-2 text-gray-600 dark:text-gray-300 focus:outline-none">
-                        <i class="fa-solid fa-bars text-xl"></i>
-                    </button>
+                <div class="flex gap-2">
+                    <button onclick="showProviderTab('bookings')" id="prov-tab-bookings" class="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-semibold">Bookings</button>
+                    <button onclick="showProviderTab('reviews')" id="prov-tab-reviews" class="px-4 py-2 bg-gray-100 dark:bg-slate-800 rounded-xl text-sm font-semibold">Reviews</button>
+                    <button onclick="openEditProfileModal()" class="px-4 py-2 bg-gray-100 dark:bg-slate-800 rounded-xl text-sm font-semibold hover:bg-gray-200 transition"><i class="fa-solid fa-user-pen mr-2"></i>Manage Profile</button>
                 </div>
             </div>
-        </div>
-
-        <div id="mobile-menu" class="hidden md:hidden border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pt-2 pb-4 space-y-2">
-            <button onclick="showPage('home'); toggleMobileMenu()" class="block w-full text-left py-2 hover:text-primary-600">Home</button>
-            <a href="#categories" onclick="toggleMobileMenu()" class="block py-2 hover:text-primary-600">Services</a>
-            <a href="#how-it-works" onclick="toggleMobileMenu()" class="block py-2 hover:text-primary-600">How It Works</a>
-            <a href="#providers" onclick="toggleMobileMenu()" class="block py-2 hover:text-primary-600">Providers</a>
-            <div id="mobile-auth-container" class="pt-2 border-t border-gray-100 dark:border-slate-800 space-y-2"></div>
-        </div>
-    </nav>
-
-    <main class="flex-grow">
-        
-        <div id="page-home" class="fade-in">
-            <section class="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div class="grid lg:grid-cols-2 gap-12 items-center">
-                        <div>
-                            <span class="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/50 rounded-full border border-primary-200 dark:border-primary-800">
-                                Premium Home Services
-                            </span>
-                            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mt-4 mb-6 leading-tight">
-                                Trusted Professionals.<br>
-                                <span class="bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">Quality Service.</span> Right at Home.
-                            </h1>
-                            <p class="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-xl">
-                                Find reliable local professionals for all your home service needs — from plumbing and electrical work to cleaning, carpentry, and more.
-                            </p>
-                            <div class="flex flex-col sm:flex-row gap-4">
-                                <a href="#providers" class="px-6 py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/25 transition text-center">Find a Service</a>
-                                <button onclick="openRegisterModal('provider')" class="px-6 py-3.5 border border-gray-300 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-800 font-semibold rounded-xl transition text-center">Become a Provider</button>
-                            </div>
-
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-12 pt-8 border-t border-gray-200 dark:border-slate-800">
-                                <div>
-                                    <p class="text-2xl font-bold text-primary-600 dark:text-primary-400">10K+</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Happy Customers</p>
-                                </div>
-                                <div>
-                                    <p class="text-2xl font-bold text-primary-600 dark:text-primary-400">500+</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Verified Providers</p>
-                                </div>
-                                <div>
-                                    <p class="text-2xl font-bold text-primary-600 dark:text-primary-400">20+</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Categories</p>
-                                </div>
-                                <div>
-                                    <p class="text-2xl font-bold text-primary-600 dark:text-primary-400">4.9/5</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Average Rating</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="relative">
-                            <div class="absolute -inset-1 bg-gradient-to-r from-primary-500 to-indigo-500 rounded-2xl blur opacity-20"></div>
-                            <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&q=80&w=800" alt="Home Repair" class="relative rounded-2xl shadow-2xl object-cover w-full h-[450px]">
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="categories" class="py-16 bg-white dark:bg-slate-800/50 transition-colors">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="text-center max-w-2xl mx-auto mb-12">
-                        <h2 class="text-3xl font-bold">Explore Our Services</h2>
-                        <p class="text-gray-600 dark:text-gray-400 mt-2">Find experts in every category for fast, hassle-free resolution.</p>
-                    </div>
-
-                    <div id="categories-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-                        </div>
-                </div>
-            </section>
-
-            <section id="providers" class="py-16">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-                        <div>
-                            <h2 class="text-3xl font-bold">Top Rated Professionals</h2>
-                            <p class="text-gray-600 dark:text-gray-400 mt-1">Book vetted and background-checked technicians directly.</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                        <input type="text" id="search-input" oninput="filterProviders()" placeholder="Search service or provider..." class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                        
-                        <select id="category-filter" onchange="filterProviders()" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            <option value="All">All Categories</option>
-                            <option value="Electrician">Electrician</option>
-                            <option value="Plumber">Plumber</option>
-                            <option value="Carpenter">Carpenter</option>
-                            <option value="Cleaner">Cleaner</option>
-                            <option value="Painter">Painter</option>
-                            <option value="AC Technician">AC Technician</option>
-                            <option value="Appliance Repair">Appliance Repair</option>
-                            <option value="Home Tutor">Home Tutor</option>
-                        </select>
-
-                        <select id="location-filter" onchange="filterProviders()" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            <option value="All">All Cities</option>
-                            <option value="Karachi">Karachi</option>
-                            <option value="Lahore">Lahore</option>
-                            <option value="Islamabad">Islamabad</option>
-                            <option value="Rawalpindi">Rawalpindi</option>
-                        </select>
-
-                        <select id="rating-filter" onchange="filterProviders()" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            <option value="0">All Ratings</option>
-                            <option value="4.5">4.5+ Rating</option>
-                            <option value="4.8">4.8+ Rating</option>
-                        </select>
-
-                        <select id="sort-filter" onchange="filterProviders()" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            <option value="recommended">Recommended</option>
-                            <option value="rating">Highest Rated</option>
-                            <option value="price-low">Price: Low to High</option>
-                            <option value="price-high">Price: High to Low</option>
-                        </select>
-                    </div>
-
-                    <div id="providers-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        </div>
-                </div>
-            </section>
-
-            <section id="how-it-works" class="py-16 bg-white dark:bg-slate-800/50 transition-colors">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="text-center max-w-2xl mx-auto mb-16">
-                        <h2 class="text-3xl font-bold">How QUICKServe Works</h2>
-                        <p class="text-gray-600 dark:text-gray-400 mt-2">Get your home issues resolved in 4 simple steps.</p>
-                    </div>
-
-                    <div class="grid md:grid-cols-4 gap-8 relative">
-                        <div class="text-center p-6 bg-gray-50 dark:bg-slate-800 rounded-2xl relative z-10 border border-gray-100 dark:border-slate-700">
-                            <div class="w-12 h-12 rounded-xl bg-primary-600 text-white flex items-center justify-center font-bold text-lg mx-auto mb-4">01</div>
-                            <h3 class="font-bold text-lg mb-2">Search</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Find the specific service or expertise you need.</p>
-                        </div>
-                        <div class="text-center p-6 bg-gray-50 dark:bg-slate-800 rounded-2xl relative z-10 border border-gray-100 dark:border-slate-700">
-                            <div class="w-12 h-12 rounded-xl bg-primary-600 text-white flex items-center justify-center font-bold text-lg mx-auto mb-4">02</div>
-                            <h3 class="font-bold text-lg mb-2">Choose</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Compare transparent prices, ratings, and customer reviews.</p>
-                        </div>
-                        <div class="text-center p-6 bg-gray-50 dark:bg-slate-800 rounded-2xl relative z-10 border border-gray-100 dark:border-slate-700">
-                            <div class="w-12 h-12 rounded-xl bg-primary-600 text-white flex items-center justify-center font-bold text-lg mx-auto mb-4">03</div>
-                            <h3 class="font-bold text-lg mb-2">Book</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Select convenient date, time slot, and location details.</p>
-                        </div>
-                        <div class="text-center p-6 bg-gray-50 dark:bg-slate-800 rounded-2xl relative z-10 border border-gray-100 dark:border-slate-700">
-                            <div class="w-12 h-12 rounded-xl bg-primary-600 text-white flex items-center justify-center font-bold text-lg mx-auto mb-4">04</div>
-                            <h3 class="font-bold text-lg mb-2">Relax</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Track job progress live until completed to satisfaction.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="why-us" class="py-16">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="text-center max-w-2xl mx-auto mb-12">
-                        <h2 class="text-3xl font-bold">Why Choose QUICKServe</h2>
-                        <p class="text-gray-600 dark:text-gray-400 mt-2">Built for dependability, safety, and ultimate convenience.</p>
-                    </div>
-
-                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="p-6 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
-                            <i class="fa-solid fa-shield-halved text-2xl text-primary-600 mb-4"></i>
-                            <h3 class="font-bold text-lg mb-2">Verified Professionals</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Background and credential checks performed for every single provider.</p>
-                        </div>
-                        <div class="p-6 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
-                            <i class="fa-solid fa-tag text-2xl text-primary-600 mb-4"></i>
-                            <h3 class="font-bold text-lg mb-2">Transparent Pricing</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Upfront pricing baseline with no hidden diagnostic surprise charges.</p>
-                        </div>
-                        <div class="p-6 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
-                            <i class="fa-solid fa-calendar-check text-2xl text-primary-600 mb-4"></i>
-                            <h3 class="font-bold text-lg mb-2">Easy Scheduling</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Pick time slots that strictly match your schedule without long waits.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="py-16 bg-gradient-to-r from-primary-600 to-indigo-700 text-white">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 class="text-3xl font-bold mb-4">Turn Your Skills Into Opportunities</h2>
-                    <p class="text-primary-100 max-w-2xl mx-auto mb-8">Join QUICKServe and connect with thousands of local clients looking for qualified technicians daily.</p>
-                    <button onclick="openRegisterModal('provider')" class="px-8 py-3.5 bg-white text-primary-600 font-bold rounded-xl shadow-lg hover:bg-gray-100 transition">Become a Service Provider</button>
-                </div>
-            </section>
-        </div>
-
-        <div id="page-customer-dashboard" class="hidden fade-in py-10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="mb-8">
-                    <h1 class="text-3xl font-bold">Customer Dashboard</h1>
-                    <p class="text-gray-600 dark:text-gray-400">Welcome back, <span id="customer-dashboard-name" class="font-semibold text-primary-600">User</span></p>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700">
-                        <p class="text-xs text-gray-500">Total Bookings</p>
-                        <p id="cust-stat-total" class="text-2xl font-bold mt-1">0</p>
-                    </div>
-                    <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700">
-                        <p class="text-xs text-yellow-500">Pending</p>
-                        <p id="cust-stat-pending" class="text-2xl font-bold mt-1">0</p>
-                    </div>
-                    <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700">
-                        <p class="text-xs text-blue-500">In Progress</p>
-                        <p id="cust-stat-progress" class="text-2xl font-bold mt-1">0</p>
-                    </div>
-                    <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700">
-                        <p class="text-xs text-green-500">Completed</p>
-                        <p id="cust-stat-completed" class="text-2xl font-bold mt-1">0</p>
-                    </div>
-                </div>
-
-                <h2 class="text-xl font-bold mb-4">My Bookings</h2>
-                <div id="customer-bookings-list" class="space-y-4">
-                    </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700"><p class="text-xs text-gray-500">Total Requests</p><p id="prov-stat-total" class="text-2xl font-bold mt-1">0</p></div>
+                <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700"><p class="text-xs text-yellow-500">Pending</p><p id="prov-stat-pending" class="text-2xl font-bold mt-1">0</p></div>
+                <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700"><p class="text-xs text-green-500">Completed Jobs</p><p id="prov-stat-completed" class="text-2xl font-bold mt-1">0</p></div>
+                <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700"><p class="text-xs text-primary-500">Total Earnings</p><p id="prov-stat-earnings" class="text-2xl font-bold mt-1">PKR 0</p></div>
             </div>
-        </div>
-
-        <div id="page-provider-dashboard" class="hidden fade-in py-10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                    <div>
-                        <h1 class="text-3xl font-bold">Provider Dashboard</h1>
-                        <p class="text-gray-600 dark:text-gray-400">Welcome back, <span id="provider-dashboard-name" class="font-semibold text-primary-600">Provider</span></p>
-                    </div>
-                    <button onclick="openEditProfileModal()" class="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-semibold hover:bg-primary-700 transition">
-                        <i class="fa-solid fa-user-pen mr-2"></i>Manage Profile
-                    </button>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700">
-                        <p class="text-xs text-gray-500">Total Requests</p>
-                        <p id="prov-stat-total" class="text-2xl font-bold mt-1">0</p>
-                    </div>
-                    <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700">
-                        <p class="text-xs text-yellow-500">Pending</p>
-                        <p id="prov-stat-pending" class="text-2xl font-bold mt-1">0</p>
-                    </div>
-                    <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700">
-                        <p class="text-xs text-green-500">Completed Jobs</p>
-                        <p id="prov-stat-completed" class="text-2xl font-bold mt-1">0</p>
-                    </div>
-                    <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700">
-                        <p class="text-xs text-primary-500">Total Earnings</p>
-                        <p id="prov-stat-earnings" class="text-2xl font-bold mt-1">PKR 0</p>
-                    </div>
-                </div>
-
+            <div id="provider-panel-bookings">
                 <h2 class="text-xl font-bold mb-4">Booking Requests</h2>
-                <div id="provider-bookings-list" class="space-y-4">
-                    </div>
+                <div id="provider-bookings-list" class="space-y-4"></div>
+            </div>
+            <div id="provider-panel-reviews" class="hidden">
+                <h2 class="text-xl font-bold mb-4">My Reviews</h2>
+                <div id="provider-reviews-list" class="space-y-4"></div>
             </div>
         </div>
+    </div>
+</main>
 
-    </main>
+<footer class="bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 mt-auto transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div>
+                <div class="flex items-center space-x-2 mb-4"><i class="fa-solid fa-bolt text-primary-600 text-xl"></i><span class="font-bold text-lg">QUICKServe</span></div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Making home services simple, transparent, and instantly accessible.</p>
+            </div>
+            <div><h4 class="font-bold text-sm mb-3">Quick Links</h4><ul class="space-y-2 text-sm text-gray-500 dark:text-gray-400">
+                <li><a href="#" onclick="showPage('home')" class="hover:text-primary-600">Home</a></li>
+                <li><a href="#categories" onclick="showPage('home')" class="hover:text-primary-600">Services</a></li>
+                <li><a href="#providers" onclick="showPage('home')" class="hover:text-primary-600">Providers</a></li>
+            </ul></div>
+            <div><h4 class="font-bold text-sm mb-3">Categories</h4><ul class="space-y-2 text-sm text-gray-500 dark:text-gray-400"><li>Electrician</li><li>Plumber</li><li>AC Technician</li></ul></div>
+            <div><h4 class="font-bold text-sm mb-3">Contact</h4><p class="text-sm text-gray-500 dark:text-gray-400">support@quickserve.pk</p></div>
+        </div>
+        <div class="border-t border-gray-100 dark:border-slate-800 pt-6 text-center text-xs text-gray-400">&copy; 2026 QUICKServe. All rights reserved.</div>
+    </div>
+</footer>
 
-    <footer class="bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 mt-auto transition-colors">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <i class="fa-solid fa-bolt text-primary-600 text-xl"></i>
-                        <span class="font-bold text-lg">QUICKServe</span>
-                    </div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Making home services simple, transparent, and instantly accessible.</p>
+<!-- AUTH MODAL -->
+<div id="auth-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md p-6 shadow-2xl border border-gray-200 dark:border-slate-800 relative fade-in max-h-[90vh] overflow-y-auto">
+        <button onclick="closeModal('auth-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <div class="flex border-b border-gray-200 dark:border-slate-800 mb-6">
+            <button id="tab-login" onclick="switchAuthTab('login')" class="w-1/2 py-2 font-bold border-b-2 border-primary-600 text-primary-600">Login</button>
+            <button id="tab-register" onclick="switchAuthTab('register')" class="w-1/2 py-2 font-bold border-b-2 border-transparent text-gray-400">Register</button>
+        </div>
+        <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Email</label><input type="email" id="login-email" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Password</label><input type="password" id="login-password" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></div>
+            <button type="submit" class="w-full py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition">Login</button>
+        </form>
+        <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Full Name</label><input type="text" id="reg-name" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Email</label><input type="email" id="reg-email" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Phone</label><input type="text" id="reg-phone" required placeholder="03001234567" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Password</label><input type="password" id="reg-password" required minlength="6" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Account Role</label>
+                <select id="reg-role" onchange="toggleProviderFields()" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
+                    <option value="customer">Customer (Book Services)</option>
+                    <option value="provider">Service Provider (Offer Services)</option>
+                </select>
+            </div>
+            <div id="reg-provider-fields" class="hidden space-y-4 border-t border-gray-100 dark:border-slate-800 pt-4">
+                <div><label class="text-xs font-semibold uppercase text-gray-500">Category</label>
+                    <select id="reg-category" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
+                        <option>Electrician</option><option>Plumber</option><option>Carpenter</option><option>Cleaner</option><option>Painter</option><option>AC Technician</option><option>Appliance Repair</option><option>Home Tutor</option>
+                    </select>
                 </div>
-                <div>
-                    <h4 class="font-bold text-sm mb-3">Quick Links</h4>
-                    <ul class="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                        <li><a href="#" onclick="showPage('home')" class="hover:text-primary-600">Home</a></li>
-                        <li><a href="#categories" onclick="showPage('home')" class="hover:text-primary-600">Services</a></li>
-                        <li><a href="#providers" onclick="showPage('home')" class="hover:text-primary-600">Providers</a></li>
-                    </ul>
+                <div><label class="text-xs font-semibold uppercase text-gray-500">City</label>
+                    <select id="reg-location" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
+                        <option>Karachi</option><option>Lahore</option><option>Islamabad</option><option>Rawalpindi</option>
+                    </select>
                 </div>
-                <div>
-                    <h4 class="font-bold text-sm mb-3">Categories</h4>
-                    <ul class="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                        <li>Electrician</li>
-                        <li>Plumber</li>
-                        <li>AC Technician</li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-sm mb-3">Contact</h4>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">support@quickserve.pk</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">+92 (021) 111-7378</p>
+                <div><label class="text-xs font-semibold uppercase text-gray-500">Starting Price (PKR)</label><input type="number" id="reg-price" min="0" placeholder="e.g. 1000" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></div>
+                <div><label class="text-xs font-semibold uppercase text-gray-500">Profile Photo (optional)</label><input type="file" id="reg-photo" accept="image/*" class="w-full mt-1 text-sm file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-primary-50 file:text-primary-600 file:text-xs file:font-semibold hover:file:bg-primary-100"></div>
+            </div>
+            <button type="submit" class="w-full py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition">Create Account</button>
+        </form>
+    </div>
+</div>
+
+<!-- PROVIDER PROFILE MODAL -->
+<div id="profile-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-2xl p-6 shadow-2xl border border-gray-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto relative fade-in">
+        <button onclick="closeModal('profile-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <div id="profile-modal-content"></div>
+    </div>
+</div>
+
+<!-- BOOKING MODAL -->
+<div id="booking-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-lg p-6 shadow-2xl border border-gray-200 dark:border-slate-800 relative fade-in max-h-[90vh] overflow-y-auto">
+        <button onclick="closeModal('booking-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <h3 class="text-xl font-bold mb-4">Book Service</h3>
+        <form onsubmit="handleBookingSubmit(event)" class="space-y-4">
+            <input type="hidden" id="book-provider-userid">
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Provider</label><input type="text" id="book-provider-name" readonly class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 font-semibold"></div>
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="text-xs font-semibold uppercase text-gray-500">Date</label><input type="date" id="book-date" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></div>
+                <div><label class="text-xs font-semibold uppercase text-gray-500">Time</label><input type="time" id="book-time" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></div>
+            </div>
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Service Address</label><input type="text" id="book-address" required placeholder="House/Apartment #, Area, City" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Problem Description</label><textarea id="book-description" required rows="3" placeholder="Describe what needs repair..." class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></textarea></div>
+            <button type="submit" class="w-full py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition">Confirm Booking Request</button>
+        </form>
+    </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div id="review-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md p-6 shadow-2xl border border-gray-200 dark:border-slate-800 relative fade-in">
+        <button onclick="closeModal('review-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <h3 class="text-xl font-bold mb-4">Rate & Review Service</h3>
+        <form onsubmit="handleReviewSubmit(event)" class="space-y-4">
+            <input type="hidden" id="review-booking-id">
+            <input type="hidden" id="review-provider-userid">
+            <div><label class="text-xs font-semibold uppercase text-gray-500 mb-2 block">Rating</label>
+                <select id="review-rating" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
+                    <option value="5">★★★★★ (5/5)</option><option value="4">★★★★☆ (4/5)</option><option value="3">★★★☆☆ (3/5)</option><option value="2">★★☆☆☆ (2/5)</option><option value="1">★☆☆☆☆ (1/5)</option>
+                </select>
+            </div>
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Your Feedback</label><textarea id="review-comment" required rows="3" placeholder="Share your experience..." class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></textarea></div>
+            <button type="submit" class="w-full py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition">Submit Review</button>
+        </form>
+    </div>
+</div>
+
+<!-- EDIT PROFILE MODAL -->
+<div id="edit-profile-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-lg p-6 shadow-2xl border border-gray-200 dark:border-slate-800 relative fade-in max-h-[90vh] overflow-y-auto">
+        <button onclick="closeModal('edit-profile-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <h3 class="text-xl font-bold mb-4">Manage Profile Details</h3>
+        <form onsubmit="handleProfileUpdate(event)" class="space-y-4">
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Category</label>
+                <select id="edit-category" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
+                    <option>Electrician</option><option>Plumber</option><option>Carpenter</option><option>Cleaner</option><option>Painter</option><option>AC Technician</option><option>Appliance Repair</option><option>Home Tutor</option>
+                </select>
+            </div>
+            <div><label class="text-xs font-semibold uppercase text-gray-500">City</label>
+                <select id="edit-location" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
+                    <option>Karachi</option><option>Lahore</option><option>Islamabad</option><option>Rawalpindi</option>
+                </select>
+            </div>
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Starting Price (PKR)</label><input type="number" id="edit-price" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Experience (e.g. '6 Years')</label><input type="text" id="edit-experience" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></div>
+            <div><label class="text-xs font-semibold uppercase text-gray-500">Bio</label><textarea id="edit-bio" rows="3" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></textarea></div>
+            <div>
+                <label class="text-xs font-semibold uppercase text-gray-500">Profile Photo</label>
+                <div class="flex items-center gap-3 mt-1">
+                    <img id="edit-photo-preview" src="" class="w-14 h-14 rounded-xl object-cover border border-gray-200 dark:border-slate-700 hidden">
+                    <input type="file" id="edit-photo" accept="image/*" class="flex-1 text-sm file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-primary-50 file:text-primary-600 file:text-xs file:font-semibold hover:file:bg-primary-100">
                 </div>
             </div>
-            <div class="border-t border-gray-100 dark:border-slate-800 pt-6 text-center text-xs text-gray-400">
-                &copy; 2026 QUICKServe. All rights reserved.
-            </div>
-        </div>
-    </footer>
-
-    <div id="auth-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md p-6 shadow-2xl border border-gray-200 dark:border-slate-800 relative fade-in">
-            <button onclick="closeModal('auth-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            
-            <div class="flex border-b border-gray-200 dark:border-slate-800 mb-6">
-                <button id="tab-login" onclick="switchAuthTab('login')" class="w-1/2 py-2 font-bold border-b-2 border-primary-600 text-primary-600">Login</button>
-                <button id="tab-register" onclick="switchAuthTab('register')" class="w-1/2 py-2 font-bold border-b-2 border-transparent text-gray-400">Register</button>
-            </div>
-
-            <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Email</label>
-                    <input type="email" id="login-email" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Password</label>
-                    <input type="password" id="login-password" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                </div>
-                <button type="submit" class="w-full py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition">Login</button>
-            </form>
-
-            <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Full Name</label>
-                    <input type="text" id="reg-name" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Email</label>
-                    <input type="email" id="reg-email" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Phone</label>
-                    <input type="text" id="reg-phone" required placeholder="03001234567" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Password</label>
-                    <input type="password" id="reg-password" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Account Role</label>
-                    <select id="reg-role" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                        <option value="customer">Customer (Book Services)</option>
-                        <option value="provider">Service Provider (Offer Services)</option>
-                    </select>
-                </div>
-                <button type="submit" class="w-full py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition">Create Account</button>
-            </form>
-        </div>
+            <button type="submit" class="w-full py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition">Save Profile</button>
+        </form>
     </div>
+</div>
 
-    <div id="profile-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-2xl p-6 shadow-2xl border border-gray-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto relative fade-in">
-            <button onclick="closeModal('profile-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <div id="profile-modal-content"></div>
-        </div>
-    </div>
+<script>
+    // ==================================================
+    // SUPABASE INIT
+    // ==================================================
+    const SUPABASE_URL = "https://uaryunimyhiwgcakbtai.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_wwdx3Mtpl3k6NPail9hlAA_6vXAlI3i";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    <div id="booking-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-lg p-6 shadow-2xl border border-gray-200 dark:border-slate-800 relative fade-in">
-            <button onclick="closeModal('booking-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-xl font-bold mb-4">Book Service</h3>
-            <form onsubmit="handleBookingSubmit(event)" class="space-y-4">
-                <input type="hidden" id="book-provider-id">
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Provider</label>
-                    <input type="text" id="book-provider-name" readonly class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 font-semibold">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-xs font-semibold uppercase text-gray-500">Date</label>
-                        <input type="date" id="book-date" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                    </div>
-                    <div>
-                        <label class="text-xs font-semibold uppercase text-gray-500">Time</label>
-                        <input type="time" id="book-time" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                    </div>
-                </div>
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Service Address</label>
-                    <input type="text" id="book-address" required placeholder="House/Apartment #, Area, City" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Problem Description</label>
-                    <textarea id="book-description" required rows="3" placeholder="Describe what needs repair..." class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></textarea>
-                </div>
-                <button type="submit" class="w-full py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition">Confirm Booking Request</button>
-            </form>
-        </div>
-    </div>
+    // ==================================================
+    // STATE
+    // NOTE ON IDS: profiles.id and providers.id are internal bigint
+    // row keys. The column that actually links to Supabase Auth (and
+    // that bookings/reviews/notifications use as customer_id/provider_id/
+    // user_id) is the uuid `user_id` column on profiles/providers.
+    // Everywhere below, "providerUserId" means that uuid, never providers.id.
+    // ==================================================
+    let currentUser = null;
+    let currentProfile = null;         // profiles row (has .id bigint, .user_id uuid)
+    let currentProviderRecord = null;  // providers row (has .id bigint, .user_id uuid)
+    let notifItems = [];
+    let notifChannel = null;
+    let bookingsChannel = null;
 
-    <div id="tracking-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md p-6 shadow-2xl border border-gray-200 dark:border-slate-800 relative fade-in">
-            <button onclick="closeModal('tracking-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-xl font-bold mb-4">Service Status Tracking</h3>
-            <div id="tracking-modal-content"></div>
-        </div>
-    </div>
+    const NOTIF_ICONS = { booking_created:'🔔', booking_accepted:'✅', booking_rejected:'✖️', booking_started:'🛠️', booking_completed:'🎉', review_received:'⭐' };
+    const STATUS_STYLE = {
+        'PENDING':'bg-yellow-100 text-yellow-800','ACCEPTED':'bg-blue-100 text-blue-800',
+        'IN PROGRESS':'bg-indigo-100 text-indigo-800','COMPLETED':'bg-green-100 text-green-800',
+        'REJECTED':'bg-red-100 text-red-800','CANCELLED':'bg-gray-100 text-gray-800'
+    };
 
-    <div id="review-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md p-6 shadow-2xl border border-gray-200 dark:border-slate-800 relative fade-in">
-            <button onclick="closeModal('review-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-xl font-bold mb-4">Rate & Review Service</h3>
-            <form onsubmit="handleReviewSubmit(event)" class="space-y-4">
-                <input type="hidden" id="review-booking-id">
-                <input type="hidden" id="review-provider-id">
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500 mb-2 block">Rating</label>
-                    <select id="review-rating" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                        <option value="5">★★★★★ (5/5)</option>
-                        <option value="4">★★★★☆ (4/5)</option>
-                        <option value="3">★★★☆☆ (3/5)</option>
-                        <option value="2">★★☆☆☆ (2/5)</option>
-                        <option value="1">★☆☆☆☆ (1/5)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Your Feedback</label>
-                    <textarea id="review-comment" required rows="3" placeholder="Share your experience..." class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></textarea>
-                </div>
-                <button type="submit" class="w-full py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition">Submit Review</button>
-            </form>
-        </div>
-    </div>
+    function escapeHtml(str){ if(str===null||str===undefined) return ''; return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    function showErrorAlert(title, err){ console.error(err); Swal.fire(title,(err&&err.message)?err.message:'Something went wrong. Please try again.','error'); }
 
-    <div id="edit-profile-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-lg p-6 shadow-2xl border border-gray-200 dark:border-slate-800 relative fade-in max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('edit-profile-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-xl font-bold mb-4">Manage Profile Details</h3>
-            <form onsubmit="handleProfileUpdate(event)" class="space-y-4">
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Category</label>
-                    <select id="edit-category" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                        <option value="Electrician">Electrician</option>
-                        <option value="Plumber">Plumber</option>
-                        <option value="Carpenter">Carpenter</option>
-                        <option value="Cleaner">Cleaner</option>
-                        <option value="Painter">Painter</option>
-                        <option value="AC Technician">AC Technician</option>
-                        <option value="Appliance Repair">Appliance Repair</option>
-                        <option value="Home Tutor">Home Tutor</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">City</label>
-                    <select id="edit-location" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                        <option value="Karachi">Karachi</option>
-                        <option value="Lahore">Lahore</option>
-                        <option value="Islamabad">Islamabad</option>
-                        <option value="Rawalpindi">Rawalpindi</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Starting Price (PKR)</label>
-                    <input type="number" id="edit-price" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Experience (e.g. '6 Years')</label>
-                    <input type="text" id="edit-experience" required class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-                </div>
-                <div>
-                    <label class="text-xs font-semibold uppercase text-gray-500">Bio</label>
-                    <textarea id="edit-bio" rows="3" class="w-full mt-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800"></textarea>
-                </div>
-                <button type="submit" class="w-full py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition">Save Profile</button>
-            </form>
-        </div>
-    </div>
+    // Upload a File to a Supabase Storage bucket and return its public URL.
+    async function uploadToBucket(bucket, file, folder){
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+        const { error } = await supabaseClient.storage.from(bucket).upload(path, file, { upsert: true, cacheControl: '3600' });
+        if(error) throw error;
+        const { data } = supabaseClient.storage.from(bucket).getPublicUrl(path);
+        return data.publicUrl;
+    }
+    function getCurrentPage(){
+        if(!document.getElementById('page-customer-dashboard').classList.contains('hidden')) return 'customer-dashboard';
+        if(!document.getElementById('page-provider-dashboard').classList.contains('hidden')) return 'provider-dashboard';
+        return 'home';
+    }
+    function getStatusBadge(status){ return `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${STATUS_STYLE[status]||'bg-gray-100'}">${status}</span>`; }
 
-    <script>
-        // ==================================================
-        // SUPABASE INITIALIZATION
-        // ==================================================
-        const SUPABASE_URL = "https://uaryunimyhiwgcakbtai.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_wwdx3Mtpl3k6NPail9hlAA_6vXAlI3i";
+    // ==================================================
+    // THEME
+    // ==================================================
+    function applyTheme(){
+        const theme = localStorage.getItem('qs_theme') || 'light';
+        document.documentElement.classList.toggle('dark', theme==='dark');
+        const cls = theme==='dark' ? 'fa-solid fa-sun text-yellow-400' : 'fa-solid fa-moon';
+        document.getElementById('theme-icon').className = cls;
+        document.getElementById('theme-icon-mobile').className = cls;
+    }
+    function toggleTheme(){
+        localStorage.setItem('qs_theme', localStorage.getItem('qs_theme')==='dark' ? 'light' : 'dark');
+        applyTheme();
+    }
 
-        const supabaseClient = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_ANON_KEY
-        );
+    // ==================================================
+    // NAVIGATION
+    // ==================================================
+    function showPage(pageId){
+        ['home','customer-dashboard','provider-dashboard'].forEach(p=>document.getElementById(`page-${p}`).classList.add('hidden'));
+        document.getElementById(`page-${pageId}`).classList.remove('hidden');
+        window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function toggleMobileMenu(){ document.getElementById('mobile-menu').classList.toggle('hidden'); }
+    function toggleProviderFields(){ document.getElementById('reg-provider-fields').classList.toggle('hidden', document.getElementById('reg-role').value!=='provider'); }
 
-        // ==================================================
-        // APP STATE (in-memory only — NOT localStorage)
-        // ==================================================
-        let currentUser = null;            // Supabase Auth user object
-        let currentProfile = null;         // profiles row for currentUser
-        let currentProviderRecord = null;  // providers row for currentUser (if role === 'provider')
-        let realtimeInitialized = false;
+    // ==================================================
+    // AUTH — profiles/providers are matched to auth users via `user_id`
+    // ==================================================
+    async function loadCurrentUserAndProfile(){
+        try {
+            const { data:{ session }, error } = await supabaseClient.auth.getSession();
+            if(error) throw error;
+            if(session && session.user){ currentUser = session.user; await loadCurrentProfile(); }
+            else { currentUser=null; currentProfile=null; currentProviderRecord=null; }
+        } catch(err){ console.error(err); currentUser=null; currentProfile=null; currentProviderRecord=null; }
+    }
+    async function loadCurrentProfile(){
+        if(!currentUser){ currentProfile=null; currentProviderRecord=null; return; }
+        try {
+            const { data, error } = await supabaseClient.from('profiles').select('*').eq('user_id', currentUser.id).single();
+            if(error) throw error;
+            currentProfile = data;
+            if(currentProfile.role==='provider') await loadCurrentProviderRecord();
+            else currentProviderRecord = null;
+        } catch(err){ console.error(err); currentProfile=null; }
+    }
+    async function loadCurrentProviderRecord(){
+        if(!currentUser){ currentProviderRecord=null; return; }
+        try {
+            const { data, error } = await supabaseClient.from('providers').select('*').eq('user_id', currentUser.id).maybeSingle();
+            if(error) throw error;
+            currentProviderRecord = data || null;
+        } catch(err){ console.error(err); currentProviderRecord=null; }
+    }
 
-        // ==================================================
-        // SMALL UTILITIES
-        // ==================================================
-        function escapeHtml(str) {
-            if (str === null || str === undefined) return '';
-            return String(str).replace(/[&<>"']/g, (m) => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-            }[m]));
+    supabaseClient.auth.onAuthStateChange(async (_event, session)=>{
+        if(session && session.user){ currentUser=session.user; await loadCurrentProfile(); }
+        else { currentUser=null; currentProfile=null; currentProviderRecord=null; }
+        renderNavbarAuth();
+    });
+
+    function renderNavbarAuth(){
+        const container = document.getElementById('nav-auth-container');
+        const mContainer = document.getElementById('mobile-auth-container');
+        const bellWrap = document.getElementById('bell-wrap-desktop');
+        if(currentProfile){
+            bellWrap.style.display='';
+            const dashPage = currentProfile.role==='provider' ? 'provider-dashboard' : 'customer-dashboard';
+            const html = `
+                <button onclick="showPage('${dashPage}')" class="px-3 py-2 text-sm font-semibold text-primary-600 hover:bg-primary-50 dark:hover:bg-slate-800 rounded-xl transition"><i class="fa-solid fa-chart-line mr-1.5"></i>Dashboard</button>
+                <span class="text-xs font-bold px-2.5 py-1 bg-gray-100 dark:bg-slate-800 rounded-lg">${escapeHtml(currentProfile.full_name)}</span>
+                <button onclick="logoutUser()" class="p-2 text-gray-400 hover:text-red-500 transition" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>`;
+            container.innerHTML = html; mContainer.innerHTML = html;
+            initNotifications();
+        } else {
+            bellWrap.style.display='none';
+            const html = `
+                <button onclick="openAuthModal('login')" class="px-4 py-2 text-sm font-semibold hover:text-primary-600 transition">Login</button>
+                <button onclick="openAuthModal('register')" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-xl shadow-md transition">Register</button>`;
+            container.innerHTML = html; mContainer.innerHTML = html;
+            teardownRealtime();
         }
+    }
 
-        function showErrorAlert(title, err) {
-            console.error(err);
-            Swal.fire(title, (err && err.message) ? err.message : 'Something went wrong. Please try again.', 'error');
-        }
+    function openAuthModal(tab){ switchAuthTab(tab); document.getElementById('auth-modal').classList.remove('hidden'); }
+    function openRegisterModal(role){ document.getElementById('reg-role').value=role; toggleProviderFields(); openAuthModal('register'); }
+    function switchAuthTab(tab){
+        const isLogin = tab==='login';
+        document.getElementById('form-login').classList.toggle('hidden', !isLogin);
+        document.getElementById('form-register').classList.toggle('hidden', isLogin);
+        document.getElementById('tab-login').className = `w-1/2 py-2 font-bold border-b-2 ${isLogin?'border-primary-600 text-primary-600':'border-transparent text-gray-400'}`;
+        document.getElementById('tab-register').className = `w-1/2 py-2 font-bold border-b-2 ${!isLogin?'border-primary-600 text-primary-600':'border-transparent text-gray-400'}`;
+    }
+    function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
 
-        function getCurrentPage() {
-            if (!document.getElementById('page-customer-dashboard').classList.contains('hidden')) return 'customer-dashboard';
-            if (!document.getElementById('page-provider-dashboard').classList.contains('hidden')) return 'provider-dashboard';
-            return 'home';
-        }
+    async function handleRegister(e){
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]'); const original = btn.innerText;
+        btn.disabled=true; btn.innerText='Creating Account...';
+        try {
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const role = document.getElementById('reg-role').value;
 
-        function hasActiveProviderFilters() {
-            return document.getElementById('search-input').value.trim() !== '' ||
-                document.getElementById('category-filter').value !== 'All' ||
-                document.getElementById('location-filter').value !== 'All' ||
-                document.getElementById('rating-filter').value !== '0' ||
-                document.getElementById('sort-filter').value !== 'recommended';
-        }
-
-        // ==================================================
-        // THEME (allowed to use localStorage per spec)
-        // ==================================================
-        function applyTheme() {
-            const theme = localStorage.getItem('qs_theme') || 'light';
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-                document.getElementById('theme-icon').className = 'fa-solid fa-sun text-yellow-400';
-                document.getElementById('theme-icon-mobile').className = 'fa-solid fa-sun text-yellow-400';
-            } else {
-                document.documentElement.classList.remove('dark');
-                document.getElementById('theme-icon').className = 'fa-solid fa-moon';
-                document.getElementById('theme-icon-mobile').className = 'fa-solid fa-moon';
+            const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({ email, password });
+            if(signUpError) throw signUpError;
+            const user = signUpData.user;
+            if(!user) throw new Error('Registration did not return a user.');
+            if(!signUpData.session){
+                Swal.fire('Confirm Your Email','Account created! Please check your email to confirm, then log in.','info');
+                closeModal('auth-modal'); return;
             }
-        }
 
-        function toggleTheme() {
-            const current = localStorage.getItem('qs_theme') === 'dark' ? 'light' : 'dark';
-            localStorage.setItem('qs_theme', current);
-            applyTheme();
-        }
+            const { error: profileError } = await supabaseClient.from('profiles').insert({
+                user_id: user.id, full_name: name, email, phone, role
+            });
+            if(profileError) throw profileError;
 
-        // ==================================================
-        // NAVIGATION
-        // ==================================================
-        function showPage(pageId) {
-            document.getElementById('page-home').classList.add('hidden');
-            document.getElementById('page-customer-dashboard').classList.add('hidden');
-            document.getElementById('page-provider-dashboard').classList.add('hidden');
-
-            const target = document.getElementById(`page-${pageId}`);
-            if (target) {
-                target.classList.remove('hidden');
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function toggleMobileMenu() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
-        }
-
-        // ==================================================
-        // SUPABASE AUTH / CURRENT USER
-        // ==================================================
-        async function loadCurrentUserAndProfile() {
-            try {
-                const { data: { session }, error } = await supabaseClient.auth.getSession();
-                if (error) throw error;
-                if (session && session.user) {
-                    currentUser = session.user;
-                    await loadCurrentProfile();
-                } else {
-                    currentUser = null;
-                    currentProfile = null;
-                    currentProviderRecord = null;
+            if(role==='provider'){
+                let imageUrl = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=300';
+                const photoFile = document.getElementById('reg-photo').files[0];
+                if(photoFile){
+                    try { imageUrl = await uploadToBucket('provider-images', photoFile, user.id); }
+                    catch(uploadErr){ console.error('Photo upload failed, using default image.', uploadErr); }
                 }
-            } catch (err) {
-                console.error(err);
-                currentUser = null;
-                currentProfile = null;
-                currentProviderRecord = null;
-            }
-        }
-
-        async function loadCurrentProfile() {
-            if (!currentUser) { currentProfile = null; currentProviderRecord = null; return; }
-            try {
-                const { data, error } = await supabaseClient
-                    .from('profiles')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .single();
-                if (error) throw error;
-                currentProfile = data;
-                if (currentProfile.role === 'provider') {
-                    await loadCurrentProviderRecord();
-                } else {
-                    currentProviderRecord = null;
-                }
-            } catch (err) {
-                console.error(err);
-                currentProfile = null;
-            }
-        }
-
-        async function loadCurrentProviderRecord() {
-            if (!currentUser) { currentProviderRecord = null; return; }
-            try {
-                const { data, error } = await supabaseClient
-                    .from('providers')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .maybeSingle();
-                if (error) throw error;
-                currentProviderRecord = data || null;
-            } catch (err) {
-                console.error(err);
-                currentProviderRecord = null;
-            }
-        }
-
-        // React to Supabase Auth state changes (login/logout in any tab/flow)
-        supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-            if (session && session.user) {
-                currentUser = session.user;
-                await loadCurrentProfile();
-            } else {
-                currentUser = null;
-                currentProfile = null;
-                currentProviderRecord = null;
-            }
-            renderNavbarAuth();
-        });
-
-        // ==================================================
-        // AUTH UI
-        // ==================================================
-        function renderNavbarAuth() {
-            const container = document.getElementById('nav-auth-container');
-            const mContainer = document.getElementById('mobile-auth-container');
-
-            if (currentProfile) {
-                const dashPage = currentProfile.role === 'provider' ? 'provider-dashboard' : 'customer-dashboard';
-                const html = `
-                    <button onclick="showPage('${dashPage}')" class="px-3 py-2 text-sm font-semibold text-primary-600 hover:bg-primary-50 dark:hover:bg-slate-800 rounded-xl transition">
-                        <i class="fa-solid fa-chart-line mr-1.5"></i>Dashboard
-                    </button>
-                    <span class="text-xs font-bold px-2.5 py-1 bg-gray-100 dark:bg-slate-800 rounded-lg">${escapeHtml(currentProfile.full_name)}</span>
-                    <button onclick="logoutUser()" class="p-2 text-gray-400 hover:text-red-500 transition" title="Logout">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                `;
-                container.innerHTML = html;
-                mContainer.innerHTML = html;
-            } else {
-                const html = `
-                    <button onclick="openAuthModal('login')" class="px-4 py-2 text-sm font-semibold hover:text-primary-600 transition">Login</button>
-                    <button onclick="openAuthModal('register')" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-xl shadow-md transition">Register</button>
-                `;
-                container.innerHTML = html;
-                mContainer.innerHTML = html;
-            }
-        }
-
-        function openAuthModal(tab = 'login') {
-            switchAuthTab(tab);
-            document.getElementById('auth-modal').classList.remove('hidden');
-        }
-
-        function openRegisterModal(role = 'customer') {
-            document.getElementById('reg-role').value = role;
-            openAuthModal('register');
-        }
-
-        function switchAuthTab(tab) {
-            const formLogin = document.getElementById('form-login');
-            const formReg = document.getElementById('form-register');
-            const tabLogin = document.getElementById('tab-login');
-            const tabReg = document.getElementById('tab-register');
-
-            if (tab === 'login') {
-                formLogin.classList.remove('hidden');
-                formReg.classList.add('hidden');
-                tabLogin.className = 'w-1/2 py-2 font-bold border-b-2 border-primary-600 text-primary-600';
-                tabReg.className = 'w-1/2 py-2 font-bold border-b-2 border-transparent text-gray-400';
-            } else {
-                formLogin.classList.add('hidden');
-                formReg.classList.remove('hidden');
-                tabReg.className = 'w-1/2 py-2 font-bold border-b-2 border-primary-600 text-primary-600';
-                tabLogin.className = 'w-1/2 py-2 font-bold border-b-2 border-transparent text-gray-400';
-            }
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-
-        async function handleRegister(e) {
-            e.preventDefault();
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerText;
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Creating Account...';
-
-            try {
-                const name = document.getElementById('reg-name').value.trim();
-                const email = document.getElementById('reg-email').value.trim();
-                const phone = document.getElementById('reg-phone').value.trim();
-                const password = document.getElementById('reg-password').value;
-                const role = document.getElementById('reg-role').value;
-
-                // STEP 1: Create Supabase Auth account
-                const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
-                    email, password
-                });
-                if (signUpError) throw signUpError;
-
-                const user = signUpData.user;
-                if (!user) throw new Error('Registration did not return a user.');
-
-                if (!signUpData.session) {
-                    // Email confirmation required by this Supabase project.
-                    Swal.fire('Confirm Your Email', 'Account created! Please check your email to confirm your account, then log in.', 'info');
-                    closeModal('auth-modal');
-                    return;
-                }
-
-                // STEP 2: We already have the authenticated user id (user.id)
-
-                // STEP 3: Insert profile
-                const { error: profileError } = await supabaseClient.from('profiles').insert({
+                const { error: providerError } = await supabaseClient.from('providers').insert({
                     user_id: user.id,
-                    full_name: name,
-                    email: email,
-                    phone: phone,
-                    role: role
+                    name,
+                    category: document.getElementById('reg-category').value,
+                    location: document.getElementById('reg-location').value,
+                    experience: '1 Year',
+                    price: document.getElementById('reg-price').value ? Number(document.getElementById('reg-price').value) : 1000,
+                    rating: 0, reviews_count: 0,
+                    image_url: imageUrl,
+                    bio: 'Newly registered home service provider.',
+                    verified: false, status: 'pending'
                 });
-                if (profileError) throw profileError;
-
-                // STEP 4: If provider, also create providers record (pending approval)
-                if (role === 'provider') {
-                    const { error: providerError } = await supabaseClient.from('providers').insert({
-                        user_id: user.id,
-                        name: name,
-                        category: 'Electrician',
-                        location: 'Karachi',
-                        experience: '1 Year',
-                        price: 1000,
-                        rating: 0,
-                        reviews_count: 0,
-                        image_url: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=300',
-                        bio: 'Newly registered home service provider.',
-                        verified: false,
-                        status: 'pending'
-                    });
-                    if (providerError) throw providerError;
-                }
-
-                await loadCurrentUserAndProfile();
-                closeModal('auth-modal');
-                renderNavbarAuth();
-                await renderProviders();
-
-                if (role === 'provider') {
-                    Swal.fire('Welcome!', 'Account created successfully. Your provider profile is pending admin approval.', 'success');
-                    showPage('provider-dashboard');
-                    await loadProviderDashboard();
-                } else {
-                    Swal.fire('Welcome!', 'Account created successfully.', 'success');
-                    showPage('customer-dashboard');
-                    await loadCustomerDashboard();
-                }
-            } catch (err) {
-                showErrorAlert('Registration Failed', err);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = originalText;
+                if(providerError) throw providerError;
             }
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerText;
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Logging In...';
-
-            try {
-                const email = document.getElementById('login-email').value.trim();
-                const password = document.getElementById('login-password').value;
-
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) throw error;
-
-                await loadCurrentUserAndProfile();
-                closeModal('auth-modal');
-                renderNavbarAuth();
-
-                if (!currentProfile) {
-                    Swal.fire('Login Issue', 'Logged in, but no profile record was found for this account.', 'warning');
-                    return;
-                }
-
-                Swal.fire('Logged In', `Welcome back, ${currentProfile.full_name}!`, 'success');
-
-                if (currentProfile.role === 'provider') {
-                    showPage('provider-dashboard');
-                    await loadProviderDashboard();
-                } else {
-                    showPage('customer-dashboard');
-                    await loadCustomerDashboard();
-                }
-            } catch (err) {
-                showErrorAlert('Invalid Credentials', err);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = originalText;
-            }
-        }
-
-        async function logoutUser() {
-            try {
-                const { error } = await supabaseClient.auth.signOut();
-                if (error) throw error;
-                currentUser = null;
-                currentProfile = null;
-                currentProviderRecord = null;
-                renderNavbarAuth();
-                showPage('home');
-                Swal.fire('Logged Out', 'You have been signed out.', 'info');
-            } catch (err) {
-                showErrorAlert('Logout Failed', err);
-            }
-        }
-
-        // ==================================================
-        // SERVICES (categories)
-        // ==================================================
-        async function renderCategories() {
-            const grid = document.getElementById('categories-grid');
-            grid.innerHTML = `<div class="col-span-full text-center py-8 text-gray-400 text-sm">Loading services...</div>`;
-            try {
-                const { data, error } = await supabaseClient
-                    .from('services')
-                    .select('*')
-                    .eq('status', 'active')
-                    .order('name', { ascending: true });
-                if (error) throw error;
-
-                if (!data || data.length === 0) {
-                    grid.innerHTML = `<div class="col-span-full text-center py-8 text-gray-400 text-sm">No services available right now.</div>`;
-                    return;
-                }
-
-                grid.innerHTML = data.map(c => `
-                    <div onclick="filterByCategory('${escapeHtml(c.name)}')" class="p-5 bg-gray-50 dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1 transition duration-200 cursor-pointer group">
-                        <div class="w-12 h-12 rounded-xl bg-primary-100 dark:bg-primary-950 text-primary-600 flex items-center justify-center text-xl mb-4 group-hover:bg-primary-600 group-hover:text-white transition">
-                            <i class="fa-solid ${escapeHtml(c.icon || 'fa-screwdriver-wrench')}"></i>
-                        </div>
-                        <h3 class="font-bold text-lg mb-1">${escapeHtml(c.name)}</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">${escapeHtml(c.description || '')}</p>
-                        <span class="text-xs font-semibold text-primary-600">Explore Providers &rarr;</span>
-                    </div>
-                `).join('');
-            } catch (err) {
-                grid.innerHTML = `<div class="col-span-full text-center py-8 text-red-400 text-sm">Unable to load services.</div>`;
-                showErrorAlert('Unable to load services.', err);
-            }
-        }
-
-        function filterByCategory(cat) {
-            document.getElementById('category-filter').value = cat;
-            filterProviders();
-            document.getElementById('providers').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // ==================================================
-        // PROVIDERS
-        // ==================================================
-        async function renderProviders(preloadedData = null) {
-            const grid = document.getElementById('providers-grid');
-            let providers = preloadedData;
-
-            if (!providers) {
-                grid.innerHTML = `<div class="col-span-full py-12 text-center text-gray-400 text-sm">Loading providers...</div>`;
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('providers')
-                        .select('*')
-                        .eq('status', 'approved')
-                        .order('rating', { ascending: false });
-                    if (error) throw error;
-                    providers = data || [];
-                } catch (err) {
-                    grid.innerHTML = `<div class="col-span-full py-12 text-center text-red-400 text-sm">Unable to load providers.</div>`;
-                    showErrorAlert('Unable to load providers.', err);
-                    return;
-                }
-            }
-
-            renderProvidersGrid(providers);
-        }
-
-        function renderProvidersGrid(providers) {
-            const grid = document.getElementById('providers-grid');
-
-            if (!providers || providers.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full py-12 text-center">
-                        <i class="fa-solid fa-user-slash text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
-                        <p class="text-gray-500">No service providers match your filter criteria.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            grid.innerHTML = providers.map(p => `
-                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition duration-200 flex flex-col">
-                    <div class="relative h-48 bg-gray-100 dark:bg-slate-900">
-                        <img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" class="w-full h-full object-cover">
-                        ${p.verified ? `<span class="absolute top-3 right-3 px-2.5 py-1 bg-green-500 text-white text-[10px] font-bold uppercase tracking-wider rounded-full shadow"><i class="fa-solid fa-check mr-1"></i>Verified</span>` : ''}
-                    </div>
-                    <div class="p-5 flex-grow flex flex-col">
-                        <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
-                            <span><i class="fa-solid fa-tag text-primary-500 mr-1"></i>${escapeHtml(p.category)}</span>
-                            <span><i class="fa-solid fa-location-dot text-red-400 mr-1"></i>${escapeHtml(p.location)}</span>
-                        </div>
-                        <h3 class="font-bold text-lg leading-snug mb-2">${escapeHtml(p.name)}</h3>
-                        <div class="flex items-center space-x-2 text-sm mb-3">
-                            <span class="text-yellow-500 font-bold"><i class="fa-solid fa-star mr-1"></i>${p.rating ?? 0}</span>
-                            <span class="text-gray-400 text-xs">(${p.reviews_count ?? 0} reviews)</span>
-                        </div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-4 flex-grow">${escapeHtml(p.bio)}</p>
-                        <div class="pt-3 border-t border-gray-100 dark:border-slate-700/60 flex items-center justify-between mt-auto">
-                            <div>
-                                <span class="text-[10px] uppercase text-gray-400 font-semibold block">Starts at</span>
-                                <span class="font-bold text-primary-600">PKR ${p.price}</span>
-                            </div>
-                            <div class="flex space-x-2">
-                                <button onclick="openProviderProfile('${p.id}')" class="px-3 py-2 bg-gray-100 dark:bg-slate-700 text-xs font-semibold rounded-xl hover:bg-gray-200 transition">Profile</button>
-                                <button onclick="triggerBooking('${p.id}')" class="px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-xl shadow transition">Book</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function filterProviders() {
-            const grid = document.getElementById('providers-grid');
-            grid.innerHTML = `<div class="col-span-full py-12 text-center text-gray-400 text-sm">Loading providers...</div>`;
-
-            const search = document.getElementById('search-input').value.trim();
-            const cat = document.getElementById('category-filter').value;
-            const loc = document.getElementById('location-filter').value;
-            const minRating = parseFloat(document.getElementById('rating-filter').value);
-            const sort = document.getElementById('sort-filter').value;
-
-            try {
-                let query = supabaseClient.from('providers').select('*').eq('status', 'approved');
-
-                if (search) {
-                    const safe = search.replace(/[%,]/g, '');
-                    query = query.or(`name.ilike.%${safe}%,category.ilike.%${safe}%`);
-                }
-                if (cat !== 'All') query = query.eq('category', cat);
-                if (loc !== 'All') query = query.eq('location', loc);
-                if (minRating > 0) query = query.gte('rating', minRating);
-
-                if (sort === 'rating') {
-                    query = query.order('rating', { ascending: false });
-                } else if (sort === 'price-low') {
-                    query = query.order('price', { ascending: true });
-                } else if (sort === 'price-high') {
-                    query = query.order('price', { ascending: false });
-                } else {
-                    query = query.order('rating', { ascending: false });
-                }
-
-                const { data, error } = await query;
-                if (error) throw error;
-                renderProvidersGrid(data || []);
-            } catch (err) {
-                grid.innerHTML = `<div class="col-span-full py-12 text-center text-red-400 text-sm">Unable to load providers.</div>`;
-                showErrorAlert('Unable to load providers.', err);
-            }
-        }
-
-        // ==================================================
-        // PROVIDER PROFILE MODAL
-        // ==================================================
-        async function openProviderProfile(id) {
-            try {
-                const { data: p, error } = await supabaseClient
-                    .from('providers')
-                    .select('*')
-                    .eq('id', id)
-                    .single();
-                if (error) throw error;
-
-                const { data: reviews, error: reviewsError } = await supabaseClient
-                    .from('reviews')
-                    .select('*')
-                    .eq('provider_id', id)
-                    .eq('status', 'visible')
-                    .order('created_at', { ascending: false });
-                if (reviewsError) throw reviewsError;
-
-                renderProviderProfileModal(p, reviews || []);
-            } catch (err) {
-                showErrorAlert('Unable to load provider profile.', err);
-            }
-        }
-
-        function renderProviderProfileModal(p, reviews) {
-            const content = document.getElementById('profile-modal-content');
-            content.innerHTML = `
-                <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 pb-6 border-b border-gray-100 dark:border-slate-800">
-                    <img src="${escapeHtml(p.image_url)}" class="w-24 h-24 rounded-2xl object-cover shadow-md">
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <h2 class="text-2xl font-bold">${escapeHtml(p.name)}</h2>
-                            ${p.verified ? '<span class="text-xs bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full">Verified</span>' : ''}
-                        </div>
-                        <p class="text-sm text-primary-600 font-semibold mt-1">${escapeHtml(p.category)}</p>
-                        <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                            <span><i class="fa-solid fa-location-dot mr-1"></i>${escapeHtml(p.location)}</span>
-                            <span><i class="fa-solid fa-briefcase mr-1"></i>${escapeHtml(p.experience)} Exp</span>
-                            <span><i class="fa-solid fa-star text-yellow-500 mr-1"></i>${p.rating ?? 0} (${p.reviews_count ?? 0} reviews)</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="py-4">
-                    <h4 class="font-bold text-sm uppercase text-gray-400 mb-2">About Professional</h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-300">${escapeHtml(p.bio)}</p>
-                </div>
-                <div class="py-4 border-t border-gray-100 dark:border-slate-800">
-                    <h4 class="font-bold text-sm uppercase text-gray-400 mb-3">Customer Reviews</h4>
-                    ${reviews.length === 0 ? '<p class="text-xs text-gray-400">No customer reviews yet.</p>' : `
-                        <div class="space-y-3 max-h-40 overflow-y-auto">
-                            ${reviews.map(r => `
-                                <div class="p-3 bg-gray-50 dark:bg-slate-800 rounded-xl text-xs">
-                                    <div class="flex justify-between font-bold mb-1">
-                                        <span>${escapeHtml(r.customer_name)}</span>
-                                        <span class="text-yellow-500">★ ${r.rating}</span>
-                                    </div>
-                                    <p class="text-gray-500 dark:text-gray-400">${escapeHtml(r.comment)}</p>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `}
-                </div>
-                <div class="pt-4 flex items-center justify-between border-t border-gray-100 dark:border-slate-800">
-                    <div>
-                        <span class="text-xs text-gray-400">Rate starting at</span>
-                        <p class="text-lg font-bold text-primary-600">PKR ${p.price}</p>
-                    </div>
-                    <button onclick="closeModal('profile-modal'); triggerBooking('${p.id}')" class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl shadow transition">Book This Provider</button>
-                </div>
-            `;
-
-            document.getElementById('profile-modal').classList.remove('hidden');
-        }
-
-        // ==================================================
-        // BOOKING
-        // ==================================================
-        async function triggerBooking(providerId) {
-            if (!currentUser || !currentProfile) {
-                Swal.fire('Login Required', 'Please log in to book a service.', 'warning');
-                openAuthModal('login');
-                return;
-            }
-            if (currentProfile.role === 'provider') {
-                Swal.fire('Action Not Allowed', 'Service providers cannot book other providers.', 'info');
-                return;
-            }
-
-            try {
-                const { data: p, error } = await supabaseClient
-                    .from('providers')
-                    .select('*')
-                    .eq('id', providerId)
-                    .single();
-                if (error) throw error;
-
-                document.getElementById('book-provider-id').value = p.id;
-                document.getElementById('book-provider-name').value = `${p.name} (${p.category})`;
-                document.getElementById('booking-modal').classList.remove('hidden');
-            } catch (err) {
-                showErrorAlert('Unable to load provider details.', err);
-            }
-        }
-
-        async function handleBookingSubmit(e) {
-            e.preventDefault();
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerText;
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Sending Request...';
-
-            try {
-                const providerId = document.getElementById('book-provider-id').value;
-
-                const { data: provider, error: providerError } = await supabaseClient
-                    .from('providers')
-                    .select('*')
-                    .eq('id', providerId)
-                    .single();
-                if (providerError) throw providerError;
-
-                const bookingPayload = {
-                    customer_id: currentUser.id,
-                    provider_id: providerId,
-                    service_id: provider.service_id || null,
-                    customer_phone: currentProfile.phone,
-                    provider_name: provider.name,
-                    service_name: provider.category,
-                    price: provider.price,
-                    booking_date: document.getElementById('book-date').value,
-                    booking_time: document.getElementById('book-time').value,
-                    address: document.getElementById('book-address').value,
-                    description: document.getElementById('book-description').value,
-                    status: 'PENDING'
-                };
-
-                const { error: insertError } = await supabaseClient.from('bookings').insert(bookingPayload);
-                if (insertError) throw insertError;
-
-                // Notify provider
-                if (provider.user_id) {
-                    await supabaseClient.from('notifications').insert({
-                        user_id: provider.user_id,
-                        title: 'New Booking Request',
-                        message: 'You have received a new service booking.',
-                        type: 'booking',
-                        is_read: false
-                    });
-                }
-
-                closeModal('booking-modal');
-                e.target.reset();
-                Swal.fire('Booking Request Sent!', 'The service provider has been notified.', 'success');
-                showPage('customer-dashboard');
-                await loadCustomerDashboard();
-            } catch (err) {
-                showErrorAlert('Unable to create booking.', err);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = originalText;
-            }
-        }
-
-        // ==================================================
-        // CUSTOMER DASHBOARD
-        // ==================================================
-        async function loadCustomerDashboard() {
-            if (!currentUser || !currentProfile) return;
-            document.getElementById('customer-dashboard-name').innerText = currentProfile.full_name;
-
-            const list = document.getElementById('customer-bookings-list');
-            list.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">Loading bookings...</div>`;
-
-            try {
-                const { data: bookings, error } = await supabaseClient
-                    .from('bookings')
-                    .select('*')
-                    .eq('customer_id', currentUser.id)
-                    .order('created_at', { ascending: false });
-                if (error) throw error;
-
-                renderCustomerStats(bookings || []);
-                renderCustomerBookingsList(bookings || []);
-            } catch (err) {
-                list.innerHTML = `<div class="text-center py-8 text-red-400 text-sm">Unable to load bookings.</div>`;
-                showErrorAlert('Unable to load bookings.', err);
-            }
-        }
-
-        function renderCustomerStats(bookings) {
-            document.getElementById('cust-stat-total').innerText = bookings.length;
-            document.getElementById('cust-stat-pending').innerText = bookings.filter(b => b.status === 'PENDING').length;
-            document.getElementById('cust-stat-progress').innerText = bookings.filter(b => b.status === 'IN PROGRESS').length;
-            document.getElementById('cust-stat-completed').innerText = bookings.filter(b => b.status === 'COMPLETED').length;
-        }
-
-        function renderCustomerBookingsList(bookings) {
-            const list = document.getElementById('customer-bookings-list');
-
-            if (bookings.length === 0) {
-                list.innerHTML = `
-                    <div class="bg-white dark:bg-slate-800 p-8 text-center rounded-2xl border border-gray-200 dark:border-slate-700">
-                        <i class="fa-solid fa-calendar-xmark text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
-                        <p class="text-gray-500">You haven't requested any home services yet.</p>
-                        <button onclick="showPage('home')" class="mt-4 px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-semibold">Browse Services</button>
-                    </div>
-                `;
-                return;
-            }
-
-            list.innerHTML = bookings.map(b => `
-                <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <div class="flex items-center space-x-3 mb-2">
-                            ${getStatusBadge(b.status)}
-                            <span class="text-xs text-gray-400">ID: ${b.id.toString().slice(0, 8)}</span>
-                        </div>
-                        <h3 class="font-bold text-lg">${escapeHtml(b.provider_name)}</h3>
-                        <p class="text-sm text-primary-600 font-semibold">${escapeHtml(b.service_name)}</p>
-                        <div class="flex flex-wrap gap-4 text-xs text-gray-500 mt-2">
-                            <span><i class="fa-solid fa-calendar mr-1"></i>${b.booking_date} at ${b.booking_time}</span>
-                            <span><i class="fa-solid fa-location-dot mr-1"></i>${escapeHtml(b.address)}</span>
-                            <span><i class="fa-solid fa-money-bill mr-1"></i>PKR ${b.price}</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <button onclick="openTrackingModal('${b.id}')" class="px-4 py-2 bg-gray-100 dark:bg-slate-700 text-xs font-semibold rounded-xl hover:bg-gray-200 transition">Track Status</button>
-                        ${(b.status === 'PENDING' || b.status === 'ACCEPTED') ? `<button onclick="cancelBooking('${b.id}')" class="px-4 py-2 bg-red-50 text-red-600 text-xs font-semibold rounded-xl hover:bg-red-100 transition">Cancel</button>` : ''}
-                        ${b.status === 'COMPLETED' ? `<button onclick="openReviewModal('${b.id}', '${b.provider_id}')" class="px-4 py-2 bg-yellow-500 text-white text-xs font-semibold rounded-xl hover:bg-yellow-600 transition">Rate Service</button>` : ''}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // ==================================================
-        // PROVIDER DASHBOARD
-        // ==================================================
-        async function loadProviderDashboard() {
-            if (!currentUser || !currentProfile) return;
-            document.getElementById('provider-dashboard-name').innerText = currentProfile.full_name;
-
-            if (!currentProviderRecord) await loadCurrentProviderRecord();
-
-            const list = document.getElementById('provider-bookings-list');
-
-            if (!currentProviderRecord) {
-                list.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">Your provider profile could not be found.</div>`;
-                return;
-            }
-
-            list.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">Loading bookings...</div>`;
-
-            try {
-                const { data: bookings, error } = await supabaseClient
-                    .from('bookings')
-                    .select('*')
-                    .eq('provider_id', currentProviderRecord.id)
-                    .order('created_at', { ascending: false });
-                if (error) throw error;
-
-                renderProviderStats(bookings || []);
-                renderProviderBookingsList(bookings || []);
-            } catch (err) {
-                list.innerHTML = `<div class="text-center py-8 text-red-400 text-sm">Unable to load bookings.</div>`;
-                showErrorAlert('Unable to load bookings.', err);
-            }
-        }
-
-        function renderProviderStats(bookings) {
-            const completed = bookings.filter(b => b.status === 'COMPLETED');
-            const totalEarnings = completed.reduce((sum, b) => sum + (Number(b.price) || 0), 0);
-
-            document.getElementById('prov-stat-total').innerText = bookings.length;
-            document.getElementById('prov-stat-pending').innerText = bookings.filter(b => b.status === 'PENDING').length;
-            document.getElementById('prov-stat-completed').innerText = completed.length;
-            document.getElementById('prov-stat-earnings').innerText = `PKR ${totalEarnings}`;
-        }
-
-        function renderProviderBookingsList(bookings) {
-            const list = document.getElementById('provider-bookings-list');
-
-            if (bookings.length === 0) {
-                list.innerHTML = `
-                    <div class="bg-white dark:bg-slate-800 p-8 text-center rounded-2xl border border-gray-200 dark:border-slate-700">
-                        <i class="fa-solid fa-inbox text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
-                        <p class="text-gray-500">No booking requests received yet.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            list.innerHTML = bookings.map(b => `
-                <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <div class="flex items-center space-x-3 mb-2">
-                            ${getStatusBadge(b.status)}
-                            <span class="text-xs text-gray-400">ID: ${b.id.toString().slice(0, 8)}</span>
-                        </div>
-                        <h3 class="font-bold text-lg">Customer</h3>
-                        <p class="text-xs text-gray-500">Phone: ${escapeHtml(b.customer_phone)}</p>
-                        <p class="text-xs text-gray-600 dark:text-gray-300 mt-2 bg-gray-50 dark:bg-slate-900 p-2 rounded-lg">"${escapeHtml(b.description)}"</p>
-                        <div class="flex flex-wrap gap-4 text-xs text-gray-500 mt-2">
-                            <span><i class="fa-solid fa-calendar mr-1"></i>${b.booking_date} at ${b.booking_time}</span>
-                            <span><i class="fa-solid fa-location-dot mr-1"></i>${escapeHtml(b.address)}</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        ${b.status === 'PENDING' ? `
-                            <button onclick="updateBookingStatus('${b.id}', 'ACCEPTED')" class="px-4 py-2 bg-green-600 text-white text-xs font-semibold rounded-xl hover:bg-green-700 transition">Accept</button>
-                            <button onclick="updateBookingStatus('${b.id}', 'REJECTED')" class="px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-xl hover:bg-red-700 transition">Reject</button>
-                        ` : ''}
-                        ${b.status === 'ACCEPTED' ? `
-                            <button onclick="updateBookingStatus('${b.id}', 'IN PROGRESS')" class="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-xl hover:bg-blue-700 transition">Start Job</button>
-                        ` : ''}
-                        ${b.status === 'IN PROGRESS' ? `
-                            <button onclick="updateBookingStatus('${b.id}', 'COMPLETED')" class="px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-xl hover:bg-emerald-700 transition">Mark Completed</button>
-                        ` : ''}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function getStatusBadge(status) {
-            const styles = {
-                'PENDING': 'bg-yellow-100 text-yellow-800',
-                'ACCEPTED': 'bg-blue-100 text-blue-800',
-                'IN PROGRESS': 'bg-indigo-100 text-indigo-800',
-                'COMPLETED': 'bg-green-100 text-green-800',
-                'REJECTED': 'bg-red-100 text-red-800',
-                'CANCELLED': 'bg-gray-100 text-gray-800'
-            };
-            return `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${styles[status] || 'bg-gray-100'}">${status}</span>`;
-        }
-
-        async function updateBookingStatus(bookingId, newStatus) {
-            try {
-                const { data: updated, error } = await supabaseClient
-                    .from('bookings')
-                    .update({ status: newStatus })
-                    .eq('id', bookingId)
-                    .select()
-                    .single();
-                if (error) throw error;
-
-                const notifMap = {
-                    'ACCEPTED': ['Booking Accepted', 'Your service provider accepted your booking.'],
-                    'REJECTED': ['Booking Rejected', 'Your service provider rejected your booking.'],
-                    'IN PROGRESS': ['Job Started', 'Your service provider has started the job.'],
-                    'COMPLETED': ['Job Completed', 'Your service has been marked completed.']
-                };
-
-                if (notifMap[newStatus] && updated && updated.customer_id) {
-                    const [title, message] = notifMap[newStatus];
-                    await supabaseClient.from('notifications').insert({
-                        user_id: updated.customer_id,
-                        title, message,
-                        type: 'booking',
-                        is_read: false
-                    });
-                }
-
-                Swal.fire('Status Updated', `Booking has been updated to ${newStatus}.`, 'success');
-                await loadProviderDashboard();
-            } catch (err) {
-                showErrorAlert('Unable to update booking.', err);
-            }
-        }
-
-        async function cancelBooking(bookingId) {
-            try {
-                const { data: booking, error } = await supabaseClient
-                    .from('bookings')
-                    .select('status')
-                    .eq('id', bookingId)
-                    .single();
-                if (error) throw error;
-
-                if (!['PENDING', 'ACCEPTED'].includes(booking.status)) {
-                    Swal.fire('Cannot Cancel', 'This booking can no longer be cancelled.', 'info');
-                    return;
-                }
-
-                const result = await Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'Cancel this service request?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, cancel it'
-                });
-
-                if (result.isConfirmed) {
-                    const { error: updateError } = await supabaseClient
-                        .from('bookings')
-                        .update({ status: 'CANCELLED' })
-                        .eq('id', bookingId);
-                    if (updateError) throw updateError;
-
-                    Swal.fire('Cancelled', 'Your booking has been cancelled.', 'success');
-                    await loadCustomerDashboard();
-                }
-            } catch (err) {
-                showErrorAlert('Unable to cancel booking.', err);
-            }
-        }
-
-        // ==================================================
-        // TRACKING MODAL
-        // ==================================================
-        async function openTrackingModal(bookingId) {
-            try {
-                const { data: b, error } = await supabaseClient
-                    .from('bookings')
-                    .select('*')
-                    .eq('id', bookingId)
-                    .single();
-                if (error) throw error;
-                renderTrackingModal(b);
-            } catch (err) {
-                showErrorAlert('Unable to load tracking info.', err);
-            }
-        }
-
-        function renderTrackingModal(b) {
-            const content = document.getElementById('tracking-modal-content');
-
-            if (b.status === 'REJECTED' || b.status === 'CANCELLED') {
-                content.innerHTML = `
-                    <div class="text-center py-6">
-                        ${getStatusBadge(b.status)}
-                        <p class="text-sm text-gray-500 mt-3">${b.status === 'REJECTED' ? 'This booking was rejected by the provider.' : 'This booking was cancelled.'}</p>
-                    </div>
-                `;
-                document.getElementById('tracking-modal').classList.remove('hidden');
-                return;
-            }
-
-            const stages = ['PENDING', 'ACCEPTED', 'IN PROGRESS', 'COMPLETED'];
-            const currentIndex = stages.indexOf(b.status);
-
-            content.innerHTML = `
-                <div class="space-y-6 relative border-l-2 border-gray-200 dark:border-slate-700 ml-4 pl-6 py-2">
-                    ${stages.map((st, i) => {
-                        const isDone = currentIndex >= i;
-                        const isCurrent = currentIndex === i;
-                        return `
-                            <div class="relative">
-                                <div class="absolute -left-[31px] top-0 w-6 h-6 rounded-full flex items-center justify-center text-xs text-white font-bold ${isDone ? 'bg-primary-600' : 'bg-gray-300 dark:bg-slate-700'}">
-                                    ${isDone ? '✓' : i + 1}
-                                </div>
-                                <h4 class="font-bold text-sm ${isCurrent ? 'text-primary-600' : ''}">${st.replace('_', ' ')}</h4>
-                                <p class="text-xs text-gray-400">${isDone ? 'Stage updated successfully.' : 'Pending stage completion.'}</p>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            `;
-            document.getElementById('tracking-modal').classList.remove('hidden');
-        }
-
-        // ==================================================
-        // REVIEWS
-        // ==================================================
-        function openReviewModal(bookingId, providerId) {
-            document.getElementById('review-booking-id').value = bookingId;
-            document.getElementById('review-provider-id').value = providerId;
-            document.getElementById('review-modal').classList.remove('hidden');
-        }
-
-        async function handleReviewSubmit(e) {
-            e.preventDefault();
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerText;
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Submitting...';
-
-            try {
-                const bookingId = document.getElementById('review-booking-id').value;
-                const providerId = document.getElementById('review-provider-id').value;
-                const rating = parseFloat(document.getElementById('review-rating').value);
-                const comment = document.getElementById('review-comment').value.trim();
-
-                const { data: bookingRow, error: bookingErr } = await supabaseClient
-                    .from('bookings')
-                    .select('status')
-                    .eq('id', bookingId)
-                    .single();
-                if (bookingErr) throw bookingErr;
-
-                if (bookingRow.status !== 'COMPLETED') {
-                    Swal.fire('Not Eligible', 'You can only review a completed booking.', 'info');
-                    closeModal('review-modal');
-                    return;
-                }
-
-                const { data: existing, error: existingError } = await supabaseClient
-                    .from('reviews')
-                    .select('id')
-                    .eq('booking_id', bookingId)
-                    .maybeSingle();
-                if (existingError) throw existingError;
-
-                if (existing) {
-                    Swal.fire('Already Reviewed', 'You have already submitted feedback for this booking.', 'info');
-                    closeModal('review-modal');
-                    return;
-                }
-
-                const { error: insertError } = await supabaseClient.from('reviews').insert({
-                    booking_id: bookingId,
-                    provider_id: providerId,
-                    customer_id: currentUser.id,
-                    customer_name: currentProfile.full_name,
-                    rating,
-                    comment,
-                    status: 'visible'
-                });
-                if (insertError) throw insertError;
-
-                await recalculateProviderRating(providerId);
-
-                const { data: providerRow } = await supabaseClient
-                    .from('providers')
-                    .select('user_id')
-                    .eq('id', providerId)
-                    .maybeSingle();
-
-                if (providerRow && providerRow.user_id) {
-                    await supabaseClient.from('notifications').insert({
-                        user_id: providerRow.user_id,
-                        title: 'New Review Received',
-                        message: 'A customer left a review on your profile.',
-                        type: 'review',
-                        is_read: false
-                    });
-                }
-
-                closeModal('review-modal');
-                e.target.reset();
-                Swal.fire('Thank You!', 'Your review has been saved.', 'success');
-                await renderProviders();
-            } catch (err) {
-                showErrorAlert('Unable to submit review.', err);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = originalText;
-            }
-        }
-
-        async function recalculateProviderRating(providerId) {
-            try {
-                const { data: reviews, error } = await supabaseClient
-                    .from('reviews')
-                    .select('rating')
-                    .eq('provider_id', providerId)
-                    .eq('status', 'visible');
-                if (error) throw error;
-
-                const count = reviews.length;
-                const avg = count > 0 ? reviews.reduce((sum, r) => sum + Number(r.rating), 0) / count : 0;
-
-                const { error: updateError } = await supabaseClient
-                    .from('providers')
-                    .update({ rating: parseFloat(avg.toFixed(1)), reviews_count: count })
-                    .eq('id', providerId);
-                if (updateError) throw updateError;
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        // ==================================================
-        // PROVIDER PROFILE EDITING
-        // ==================================================
-        async function openEditProfileModal() {
-            try {
-                if (!currentProviderRecord) await loadCurrentProviderRecord();
-                const p = currentProviderRecord || {};
-
-                document.getElementById('edit-category').value = p.category || 'Electrician';
-                document.getElementById('edit-location').value = p.location || 'Karachi';
-                document.getElementById('edit-price').value = p.price || 1000;
-                document.getElementById('edit-experience').value = p.experience || '1 Year';
-                document.getElementById('edit-bio').value = p.bio || '';
-
-                document.getElementById('edit-profile-modal').classList.remove('hidden');
-            } catch (err) {
-                showErrorAlert('Unable to load your profile.', err);
-            }
-        }
-
-        async function handleProfileUpdate(e) {
-            e.preventDefault();
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerText;
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Saving...';
-
-            try {
-                if (!currentProviderRecord) await loadCurrentProviderRecord();
-                if (!currentProviderRecord) throw new Error('Provider record not found.');
-
-                const updates = {
-                    category: document.getElementById('edit-category').value,
-                    location: document.getElementById('edit-location').value,
-                    price: parseFloat(document.getElementById('edit-price').value),
-                    experience: document.getElementById('edit-experience').value,
-                    bio: document.getElementById('edit-bio').value
-                };
-
-                const { error } = await supabaseClient
-                    .from('providers')
-                    .update(updates)
-                    .eq('id', currentProviderRecord.id);
-                if (error) throw error;
-
-                await loadCurrentProviderRecord();
-                closeModal('edit-profile-modal');
-                Swal.fire('Profile Updated', 'Your changes are now live.', 'success');
-                await renderProviders();
-            } catch (err) {
-                showErrorAlert('Unable to save profile.', err);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = originalText;
-            }
-        }
-
-        // ==================================================
-        // SUPABASE REALTIME
-        // ==================================================
-        function setupRealtimeSubscriptions() {
-            if (realtimeInitialized) return;
-            realtimeInitialized = true;
-
-            supabaseClient
-                .channel('quickserve-bookings')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, async () => {
-                    const page = getCurrentPage();
-                    if (page === 'customer-dashboard') await loadCustomerDashboard();
-                    if (page === 'provider-dashboard') await loadProviderDashboard();
-                })
-                .subscribe();
-
-            supabaseClient
-                .channel('quickserve-reviews')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, async () => {
-                    if (getCurrentPage() === 'home') {
-                        if (hasActiveProviderFilters()) await filterProviders();
-                        else await renderProviders();
-                    }
-                })
-                .subscribe();
-
-            supabaseClient
-                .channel('quickserve-providers')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'providers' }, async () => {
-                    if (getCurrentPage() === 'home') {
-                        if (hasActiveProviderFilters()) await filterProviders();
-                        else await renderProviders();
-                    }
-                    if (currentProfile && currentProfile.role === 'provider') {
-                        await loadCurrentProviderRecord();
-                    }
-                })
-                .subscribe();
-
-            supabaseClient
-                .channel('quickserve-notifications')
-                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, (payload) => {
-                    const n = payload.new;
-                    if (currentUser && n.user_id === currentUser.id) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'info',
-                            title: `🔔 ${n.title}`,
-                            text: n.message,
-                            showConfirmButton: false,
-                            timer: 4000,
-                            timerProgressBar: true
-                        });
-                    }
-                })
-                .subscribe();
-        }
-
-        // ==================================================
-        // INITIALIZATION
-        // ==================================================
-        window.addEventListener('DOMContentLoaded', async () => {
-            applyTheme();
-            renderNavbarAuth();
-
-            await Promise.all([
-                renderCategories(),
-                renderProviders()
-            ]);
 
             await loadCurrentUserAndProfile();
-            renderNavbarAuth();
+            closeModal('auth-modal'); renderNavbarAuth(); await renderProviders();
+            Swal.fire('Welcome!', role==='provider' ? 'Account created. Your provider profile is now visible to customers.' : 'Account created successfully.', 'success');
+            if(role==='provider'){ showPage('provider-dashboard'); await loadProviderDashboard(); }
+            else { showPage('customer-dashboard'); await loadCustomerDashboard(); }
+        } catch(err){ showErrorAlert('Registration Failed', err); }
+        finally { btn.disabled=false; btn.innerText=original; }
+    }
 
-            setupRealtimeSubscriptions();
-        });
-    </script>
+    async function handleLogin(e){
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]'); const original = btn.innerText;
+        btn.disabled=true; btn.innerText='Logging In...';
+        try {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if(error) throw error;
+            await loadCurrentUserAndProfile();
+            closeModal('auth-modal'); renderNavbarAuth();
+            if(!currentProfile){ Swal.fire('Login Issue','Logged in, but no profile record was found for this account.','warning'); return; }
+            Swal.fire('Logged In', `Welcome back, ${currentProfile.full_name}!`, 'success');
+            if(currentProfile.role==='provider'){ showPage('provider-dashboard'); await loadProviderDashboard(); }
+            else { showPage('customer-dashboard'); await loadCustomerDashboard(); }
+        } catch(err){ showErrorAlert('Invalid Credentials', err); }
+        finally { btn.disabled=false; btn.innerText=original; }
+    }
+
+    async function logoutUser(){
+        try {
+            await supabaseClient.auth.signOut();
+            currentUser=null; currentProfile=null; currentProviderRecord=null;
+            teardownRealtime(); renderNavbarAuth(); showPage('home');
+            Swal.fire('Logged Out','You have been signed out.','info');
+        } catch(err){ showErrorAlert('Logout Failed', err); }
+    }
+
+    // ==================================================
+    // CATEGORIES
+    // ==================================================
+    async function renderCategories(){
+        const grid = document.getElementById('categories-grid');
+        grid.innerHTML = `<div class="col-span-full text-center py-8 text-gray-400 text-sm">Loading services...</div>`;
+        try {
+            const { data, error } = await supabaseClient.from('services').select('*').eq('status','active').order('name',{ascending:true});
+            if(error) throw error;
+            if(!data || data.length===0){ grid.innerHTML = `<div class="col-span-full text-center py-8 text-gray-400 text-sm">No services listed yet.</div>`; return; }
+            grid.innerHTML = data.map(c=>`
+                <div onclick="filterByCategory('${escapeHtml(c.name)}')" class="p-5 bg-gray-50 dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 hover:shadow-xl hover:-translate-y-1 transition duration-200 cursor-pointer group">
+                    <div class="w-12 h-12 rounded-xl bg-primary-100 dark:bg-primary-950 text-primary-600 flex items-center justify-center text-xl mb-4 group-hover:bg-primary-600 group-hover:text-white transition"><i class="fa-solid ${escapeHtml(c.icon||'fa-screwdriver-wrench')}"></i></div>
+                    <h3 class="font-bold text-lg mb-1">${escapeHtml(c.name)}</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">${escapeHtml(c.description||'')}</p>
+                    <span class="text-xs font-semibold text-primary-600">Explore Providers &rarr;</span>
+                </div>`).join('');
+        } catch(err){
+            grid.innerHTML = `<div class="col-span-full text-center py-8 text-red-400 text-sm">Unable to load services.</div>`;
+            console.error(err);
+        }
+    }
+    function filterByCategory(cat){ document.getElementById('category-filter').value=cat; filterProviders(); document.getElementById('providers').scrollIntoView({behavior:'smooth'}); }
+
+    // ==================================================
+    // PROVIDERS — sourced from the `providers` table.
+    // The uuid passed around the UI for booking/reviews/notifications is
+    // always `p.user_id`, never `p.id` (that's just the internal row key).
+    // ==================================================
+    async function renderProviders(preloaded=null){
+        const grid = document.getElementById('providers-grid');
+        let providers = preloaded;
+        if(!providers){
+            grid.innerHTML = `<div class="col-span-full py-12 text-center text-gray-400 text-sm">Loading providers...</div>`;
+            try {
+                const { data, error } = await supabaseClient.from('providers').select('*').order('rating',{ascending:false});
+                if(error) throw error;
+                providers = data || [];
+            } catch(err){
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-red-400 text-sm">Unable to load providers.</div>`;
+                showErrorAlert('Unable to load providers.', err);
+                return;
+            }
+        }
+        renderProvidersGrid(providers);
+    }
+
+    function renderProvidersGrid(providers){
+        const grid = document.getElementById('providers-grid');
+        if(!providers || providers.length===0){
+            grid.innerHTML = `<div class="col-span-full py-12 text-center"><i class="fa-solid fa-user-slash text-4xl text-gray-300 dark:text-gray-600 mb-3"></i><p class="text-gray-500">No service providers match your filter criteria.</p></div>`;
+            return;
+        }
+        grid.innerHTML = providers.map(p=>`
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition duration-200 flex flex-col">
+                <div class="relative h-48 bg-gray-100 dark:bg-slate-900">
+                    <img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" class="w-full h-full object-cover">
+                    ${p.verified ? `<span class="absolute top-3 right-3 px-2.5 py-1 bg-green-500 text-white text-[10px] font-bold uppercase tracking-wider rounded-full shadow"><i class="fa-solid fa-check mr-1"></i>Verified</span>` : ''}
+                </div>
+                <div class="p-5 flex-grow flex flex-col">
+                    <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
+                        <span><i class="fa-solid fa-tag text-primary-500 mr-1"></i>${escapeHtml(p.category)}</span>
+                        <span><i class="fa-solid fa-location-dot text-red-400 mr-1"></i>${escapeHtml(p.location)}</span>
+                    </div>
+                    <h3 class="font-bold text-lg leading-snug mb-2">${escapeHtml(p.name)}</h3>
+                    <div class="flex items-center space-x-2 text-sm mb-3">
+                        <span class="text-yellow-500 font-bold"><i class="fa-solid fa-star mr-1"></i>${p.rating ?? 0}</span>
+                        <span class="text-gray-400 text-xs">(${p.reviews_count ?? 0} reviews)</span>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-4 flex-grow">${escapeHtml(p.bio||'')}</p>
+                    <div class="pt-3 border-t border-gray-100 dark:border-slate-700/60 flex items-center justify-between mt-auto">
+                        <div><span class="text-[10px] uppercase text-gray-400 font-semibold block">Starts at</span><span class="font-bold text-primary-600">PKR ${p.price}</span></div>
+                        <div class="flex space-x-2">
+                            <button onclick="openProviderProfile('${p.user_id}')" class="px-3 py-2 bg-gray-100 dark:bg-slate-700 text-xs font-semibold rounded-xl hover:bg-gray-200 transition">Profile</button>
+                            <button onclick="triggerBooking('${p.user_id}')" class="px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-xl shadow transition">Book</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`).join('');
+    }
+
+    async function filterProviders(){
+        const grid = document.getElementById('providers-grid');
+        grid.innerHTML = `<div class="col-span-full py-12 text-center text-gray-400 text-sm">Loading providers...</div>`;
+        const search = document.getElementById('search-input').value.trim();
+        const cat = document.getElementById('category-filter').value;
+        const loc = document.getElementById('location-filter').value;
+        const minRating = parseFloat(document.getElementById('rating-filter').value);
+        const sort = document.getElementById('sort-filter').value;
+        try {
+            let query = supabaseClient.from('providers').select('*');
+            if(search){ const safe = search.replace(/[%,]/g,''); query = query.or(`name.ilike.%${safe}%,category.ilike.%${safe}%`); }
+            if(cat!=='All') query = query.eq('category', cat);
+            if(loc!=='All') query = query.eq('location', loc);
+            if(minRating>0) query = query.gte('rating', minRating);
+            if(sort==='rating') query = query.order('rating',{ascending:false});
+            else if(sort==='price-low') query = query.order('price',{ascending:true});
+            else if(sort==='price-high') query = query.order('price',{ascending:false});
+            else query = query.order('rating',{ascending:false});
+            const { data, error } = await query;
+            if(error) throw error;
+            renderProvidersGrid(data || []);
+        } catch(err){
+            grid.innerHTML = `<div class="col-span-full py-12 text-center text-red-400 text-sm">Unable to load providers.</div>`;
+            showErrorAlert('Unable to load providers.', err);
+        }
+    }
+
+    async function openProviderProfile(providerUserId){
+        try {
+            const { data: p, error } = await supabaseClient.from('providers').select('*').eq('user_id', providerUserId).single();
+            if(error) throw error;
+            const { data: reviews, error: reviewsError } = await supabaseClient.from('reviews').select('*').eq('provider_id', providerUserId).order('created_at',{ascending:false});
+            if(reviewsError) throw reviewsError;
+            renderProviderProfileModal(p, reviews || []);
+        } catch(err){ showErrorAlert('Unable to load provider profile.', err); }
+    }
+
+    function renderProviderProfileModal(p, reviews){
+        const content = document.getElementById('profile-modal-content');
+        content.innerHTML = `
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 pb-6 border-b border-gray-100 dark:border-slate-800">
+                <img src="${escapeHtml(p.image_url)}" class="w-24 h-24 rounded-2xl object-cover shadow-md">
+                <div>
+                    <div class="flex items-center space-x-2"><h2 class="text-2xl font-bold">${escapeHtml(p.name)}</h2>${p.verified?'<span class="text-xs bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full">Verified</span>':''}</div>
+                    <p class="text-sm text-primary-600 font-semibold mt-1">${escapeHtml(p.category)}</p>
+                    <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                        <span><i class="fa-solid fa-location-dot mr-1"></i>${escapeHtml(p.location)}</span>
+                        <span><i class="fa-solid fa-briefcase mr-1"></i>${escapeHtml(p.experience)} Exp</span>
+                        <span><i class="fa-solid fa-star text-yellow-500 mr-1"></i>${p.rating??0} (${p.reviews_count??0} reviews)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="py-4"><h4 class="font-bold text-sm uppercase text-gray-400 mb-2">About Professional</h4><p class="text-sm text-gray-600 dark:text-gray-300">${escapeHtml(p.bio)}</p></div>
+            <div class="py-4 border-t border-gray-100 dark:border-slate-800">
+                <h4 class="font-bold text-sm uppercase text-gray-400 mb-3">Customer Reviews</h4>
+                ${reviews.length===0 ? '<p class="text-xs text-gray-400">No customer reviews yet.</p>' : `
+                    <div class="space-y-3 max-h-40 overflow-y-auto">
+                        ${reviews.map(r=>`<div class="p-3 bg-gray-50 dark:bg-slate-800 rounded-xl text-xs"><div class="flex justify-between font-bold mb-1"><span>${escapeHtml(r.customer_name)}</span><span class="text-yellow-500">★ ${r.rating}</span></div><p class="text-gray-500 dark:text-gray-400">${escapeHtml(r.comment)}</p></div>`).join('')}
+                    </div>`}
+            </div>
+            <div class="pt-4 flex items-center justify-between border-t border-gray-100 dark:border-slate-800">
+                <div><span class="text-xs text-gray-400">Rate starting at</span><p class="text-lg font-bold text-primary-600">PKR ${p.price}</p></div>
+                <button onclick="closeModal('profile-modal'); triggerBooking('${p.user_id}')" class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl shadow transition">Book This Provider</button>
+            </div>`;
+        document.getElementById('profile-modal').classList.remove('hidden');
+    }
+
+    // ==================================================
+    // BOOKING
+    // ==================================================
+    async function triggerBooking(providerUserId){
+        if(!currentUser || !currentProfile){ Swal.fire('Login Required','Please log in to book a service.','warning'); openAuthModal('login'); return; }
+        if(currentProfile.role==='provider'){ Swal.fire('Action Not Allowed','Service providers cannot book other providers.','info'); return; }
+        try {
+            const { data: p, error } = await supabaseClient.from('providers').select('*').eq('user_id', providerUserId).single();
+            if(error) throw error;
+            document.getElementById('book-provider-userid').value = p.user_id;
+            document.getElementById('book-provider-name').value = `${p.name} (${p.category})`;
+            document.getElementById('booking-modal').classList.remove('hidden');
+        } catch(err){ showErrorAlert('Unable to load provider details.', err); }
+    }
+
+    async function handleBookingSubmit(e){
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]'); const original = btn.innerText;
+        btn.disabled=true; btn.innerText='Sending Request...';
+        try {
+            const providerUserId = document.getElementById('book-provider-userid').value;
+            const { data: provider, error: providerError } = await supabaseClient.from('providers').select('*').eq('user_id', providerUserId).single();
+            if(providerError) throw providerError;
+
+            const bookingPayload = {
+                customer_id: currentUser.id,
+                provider_id: providerUserId,
+                customer_phone: currentProfile.phone,
+                provider_name: provider.name,
+                service_name: provider.category,
+                price: provider.price,
+                booking_date: document.getElementById('book-date').value,
+                booking_time: document.getElementById('book-time').value,
+                address: document.getElementById('book-address').value,
+                description: document.getElementById('book-description').value,
+                status: 'PENDING'
+            };
+            const { data: booking, error: insertError } = await supabaseClient.from('bookings').insert(bookingPayload).select().single();
+            if(insertError) throw insertError;
+
+            await supabaseClient.from('notifications').insert({
+                user_id: providerUserId,
+                title: 'New booking request',
+                message: `${currentProfile.full_name} requested your service: ${provider.category}`,
+                type: 'booking_created',
+                booking_id: booking.id,
+                is_read: false
+            });
+
+            closeModal('booking-modal'); e.target.reset();
+            Swal.fire('Booking Request Sent!','The service provider has been notified.','success');
+            showPage('customer-dashboard'); await loadCustomerDashboard();
+        } catch(err){ showErrorAlert('Unable to create booking.', err); }
+        finally { btn.disabled=false; btn.innerText=original; }
+    }
+
+    // ==================================================
+    // CUSTOMER DASHBOARD
+    // ==================================================
+    let reviewedBookingIds = new Set();
+
+    async function loadCustomerDashboard(){
+        if(!currentUser || !currentProfile) return;
+        document.getElementById('customer-dashboard-name').innerText = currentProfile.full_name;
+        const list = document.getElementById('customer-bookings-list');
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">Loading bookings...</div>`;
+        try {
+            const { data: bookings, error } = await supabaseClient.from('bookings').select('*').eq('customer_id', currentUser.id).order('created_at',{ascending:false});
+            if(error) throw error;
+
+            const { data: myReviews } = await supabaseClient.from('reviews').select('booking_id').eq('customer_id', currentUser.id);
+            reviewedBookingIds = new Set((myReviews||[]).map(r=>r.booking_id));
+
+            renderCustomerStats(bookings || []);
+            renderCustomerBookingsList(bookings || []);
+        } catch(err){
+            list.innerHTML = `<div class="text-center py-8 text-red-400 text-sm">Unable to load bookings.</div>`;
+            showErrorAlert('Unable to load bookings.', err);
+        }
+    }
+
+    function renderCustomerStats(bookings){
+        document.getElementById('cust-stat-total').innerText = bookings.length;
+        document.getElementById('cust-stat-pending').innerText = bookings.filter(b=>b.status==='PENDING').length;
+        document.getElementById('cust-stat-progress').innerText = bookings.filter(b=>b.status==='IN PROGRESS').length;
+        document.getElementById('cust-stat-completed').innerText = bookings.filter(b=>b.status==='COMPLETED').length;
+    }
+
+    function renderCustomerBookingsList(bookings){
+        const list = document.getElementById('customer-bookings-list');
+        if(bookings.length===0){
+            list.innerHTML = `<div class="bg-white dark:bg-slate-800 p-8 text-center rounded-2xl border border-gray-200 dark:border-slate-700"><i class="fa-solid fa-calendar-xmark text-4xl text-gray-300 dark:text-gray-600 mb-3"></i><p class="text-gray-500">You haven't requested any home services yet.</p><button onclick="showPage('home')" class="mt-4 px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-semibold">Browse Services</button></div>`;
+            return;
+        }
+        list.innerHTML = bookings.map(b=>`
+            <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center space-x-3 mb-2">${getStatusBadge(b.status)}<span class="text-xs text-gray-400">ID: ${b.id.toString().slice(0,8)}</span></div>
+                    <h3 class="font-bold text-lg">${escapeHtml(b.provider_name)}</h3>
+                    <p class="text-sm text-primary-600 font-semibold">${escapeHtml(b.service_name)}</p>
+                    <div class="flex flex-wrap gap-4 text-xs text-gray-500 mt-2">
+                        <span><i class="fa-solid fa-calendar mr-1"></i>${b.booking_date} at ${b.booking_time}</span>
+                        <span><i class="fa-solid fa-location-dot mr-1"></i>${escapeHtml(b.address)}</span>
+                        <span><i class="fa-solid fa-money-bill mr-1"></i>PKR ${b.price}</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    ${(b.status==='PENDING'||b.status==='ACCEPTED') ? `<button onclick="cancelBooking('${b.id}')" class="px-4 py-2 bg-red-50 text-red-600 text-xs font-semibold rounded-xl hover:bg-red-100 transition">Cancel</button>` : ''}
+                    ${b.status==='COMPLETED' && !reviewedBookingIds.has(b.id) ? `<button onclick="openReviewModal('${b.id}','${b.provider_id}')" class="px-4 py-2 bg-yellow-500 text-white text-xs font-semibold rounded-xl hover:bg-yellow-600 transition">Rate Service</button>` : ''}
+                </div>
+            </div>`).join('');
+    }
+
+    async function cancelBooking(bookingId){
+        try {
+            const { data: booking, error } = await supabaseClient.from('bookings').select('status').eq('id', bookingId).single();
+            if(error) throw error;
+            if(!['PENDING','ACCEPTED'].includes(booking.status)){ Swal.fire('Cannot Cancel','This booking can no longer be cancelled.','info'); return; }
+            const result = await Swal.fire({ title:'Are you sure?', text:'Cancel this service request?', icon:'warning', showCancelButton:true, confirmButtonText:'Yes, cancel it' });
+            if(result.isConfirmed){
+                const { error: updateError } = await supabaseClient.from('bookings').update({ status:'CANCELLED' }).eq('id', bookingId);
+                if(updateError) throw updateError;
+                Swal.fire('Cancelled','Your booking has been cancelled.','success');
+                await loadCustomerDashboard();
+            }
+        } catch(err){ showErrorAlert('Unable to cancel booking.', err); }
+    }
+
+    // ==================================================
+    // PROVIDER DASHBOARD
+    // ==================================================
+    function showProviderTab(tab){
+        document.getElementById('provider-panel-bookings').classList.toggle('hidden', tab!=='bookings');
+        document.getElementById('provider-panel-reviews').classList.toggle('hidden', tab!=='reviews');
+        document.getElementById('prov-tab-bookings').className = `px-4 py-2 rounded-xl text-sm font-semibold ${tab==='bookings'?'bg-primary-600 text-white':'bg-gray-100 dark:bg-slate-800'}`;
+        document.getElementById('prov-tab-reviews').className = `px-4 py-2 rounded-xl text-sm font-semibold ${tab==='reviews'?'bg-primary-600 text-white':'bg-gray-100 dark:bg-slate-800'}`;
+        if(tab==='reviews') loadProviderReviews();
+    }
+
+    async function loadProviderDashboard(){
+        if(!currentUser || !currentProfile) return;
+        document.getElementById('provider-dashboard-name').innerText = currentProfile.full_name;
+        const list = document.getElementById('provider-bookings-list');
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">Loading bookings...</div>`;
+        try {
+            // provider_id on bookings holds the provider's AUTH user_id (uuid) — same as currentUser.id
+            const { data: bookings, error } = await supabaseClient.from('bookings').select('*').eq('provider_id', currentUser.id).order('created_at',{ascending:false});
+            if(error) throw error;
+            renderProviderStats(bookings || []);
+            renderProviderBookingsList(bookings || []);
+        } catch(err){
+            list.innerHTML = `<div class="text-center py-8 text-red-400 text-sm">Unable to load bookings.</div>`;
+            showErrorAlert('Unable to load bookings.', err);
+        }
+    }
+
+    function renderProviderStats(bookings){
+        const completed = bookings.filter(b=>b.status==='COMPLETED');
+        const totalEarnings = completed.reduce((sum,b)=>sum+(Number(b.price)||0),0);
+        document.getElementById('prov-stat-total').innerText = bookings.length;
+        document.getElementById('prov-stat-pending').innerText = bookings.filter(b=>b.status==='PENDING').length;
+        document.getElementById('prov-stat-completed').innerText = completed.length;
+        document.getElementById('prov-stat-earnings').innerText = `PKR ${totalEarnings}`;
+    }
+
+    function renderProviderBookingsList(bookings){
+        const list = document.getElementById('provider-bookings-list');
+        if(bookings.length===0){
+            list.innerHTML = `<div class="bg-white dark:bg-slate-800 p-8 text-center rounded-2xl border border-gray-200 dark:border-slate-700"><i class="fa-solid fa-inbox text-4xl text-gray-300 dark:text-gray-600 mb-3"></i><p class="text-gray-500">No booking requests received yet.</p></div>`;
+            return;
+        }
+        list.innerHTML = bookings.map(b=>`
+            <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center space-x-3 mb-2">${getStatusBadge(b.status)}<span class="text-xs text-gray-400">ID: ${b.id.toString().slice(0,8)}</span></div>
+                    <h3 class="font-bold text-lg">Customer</h3>
+                    <p class="text-xs text-gray-500">Phone: ${escapeHtml(b.customer_phone)}</p>
+                    <p class="text-xs text-gray-600 dark:text-gray-300 mt-2 bg-gray-50 dark:bg-slate-900 p-2 rounded-lg">"${escapeHtml(b.description)}"</p>
+                    <div class="flex flex-wrap gap-4 text-xs text-gray-500 mt-2">
+                        <span><i class="fa-solid fa-calendar mr-1"></i>${b.booking_date} at ${b.booking_time}</span>
+                        <span><i class="fa-solid fa-location-dot mr-1"></i>${escapeHtml(b.address)}</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    ${b.status==='PENDING' ? `<button onclick="updateBookingStatus('${b.id}','ACCEPTED')" class="px-4 py-2 bg-green-600 text-white text-xs font-semibold rounded-xl hover:bg-green-700 transition">Accept</button><button onclick="updateBookingStatus('${b.id}','REJECTED')" class="px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-xl hover:bg-red-700 transition">Reject</button>` : ''}
+                    ${b.status==='ACCEPTED' ? `<button onclick="updateBookingStatus('${b.id}','IN PROGRESS')" class="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-xl hover:bg-blue-700 transition">Start Job</button>` : ''}
+                    ${b.status==='IN PROGRESS' ? `<button onclick="updateBookingStatus('${b.id}','COMPLETED')" class="px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-xl hover:bg-emerald-700 transition">Mark Completed</button>` : ''}
+                </div>
+            </div>`).join('');
+    }
+
+    async function updateBookingStatus(bookingId, newStatus){
+        try {
+            const { data: updated, error } = await supabaseClient.from('bookings').update({ status:newStatus }).eq('id', bookingId).select().single();
+            if(error) throw error;
+            const notifMap = {
+                'ACCEPTED': ['Booking accepted','Your booking was accepted.'],
+                'REJECTED': ['Booking rejected','Your booking request was rejected.'],
+                'IN PROGRESS': ['Service in progress','Your service is now in progress.'],
+                'COMPLETED': ['Service completed','Your service has been completed. Please leave a review.']
+            };
+            const typeMap = { 'ACCEPTED':'booking_accepted','REJECTED':'booking_rejected','IN PROGRESS':'booking_started','COMPLETED':'booking_completed' };
+            if(notifMap[newStatus] && updated && updated.customer_id){
+                const [title,message] = notifMap[newStatus];
+                await supabaseClient.from('notifications').insert({ user_id: updated.customer_id, title, message, type: typeMap[newStatus], booking_id: bookingId, is_read:false });
+            }
+            Swal.fire('Status Updated', `Booking has been updated to ${newStatus}.`, 'success');
+            await loadProviderDashboard();
+        } catch(err){ showErrorAlert('Unable to update booking.', err); }
+    }
+
+    async function loadProviderReviews(){
+        const list = document.getElementById('provider-reviews-list');
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">Loading reviews...</div>`;
+        try {
+            const { data, error } = await supabaseClient.from('reviews').select('*').eq('provider_id', currentUser.id).order('created_at',{ascending:false});
+            if(error) throw error;
+            if(!data || data.length===0){ list.innerHTML = `<div class="bg-white dark:bg-slate-800 p-8 text-center rounded-2xl border border-gray-200 dark:border-slate-700"><p class="text-gray-500">No reviews yet.</p></div>`; return; }
+            list.innerHTML = data.map(r=>`
+                <div class="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700">
+                    <div class="flex justify-between font-bold mb-1"><span>${escapeHtml(r.customer_name)}</span><span class="text-yellow-500">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">${escapeHtml(r.comment||'No comment left.')}</p>
+                </div>`).join('');
+        } catch(err){
+            list.innerHTML = `<div class="text-center py-8 text-red-400 text-sm">Unable to load reviews.</div>`;
+            showErrorAlert('Unable to load reviews.', err);
+        }
+    }
+
+    // ==================================================
+    // REVIEWS
+    // ==================================================
+    function openReviewModal(bookingId, providerUserId){
+        document.getElementById('review-booking-id').value = bookingId;
+        document.getElementById('review-provider-userid').value = providerUserId;
+        document.getElementById('review-modal').classList.remove('hidden');
+    }
+
+    async function handleReviewSubmit(e){
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]'); const original = btn.innerText;
+        btn.disabled=true; btn.innerText='Submitting...';
+        try {
+            const bookingId = document.getElementById('review-booking-id').value;
+            const providerUserId = document.getElementById('review-provider-userid').value;
+            const rating = parseFloat(document.getElementById('review-rating').value);
+            const comment = document.getElementById('review-comment').value.trim();
+
+            const { data: bookingRow, error: bookingErr } = await supabaseClient.from('bookings').select('status').eq('id', bookingId).single();
+            if(bookingErr) throw bookingErr;
+            if(bookingRow.status!=='COMPLETED'){ Swal.fire('Not Eligible','You can only review a completed booking.','info'); closeModal('review-modal'); return; }
+
+            const { data: existing } = await supabaseClient.from('reviews').select('id').eq('booking_id', bookingId).maybeSingle();
+            if(existing){ Swal.fire('Already Reviewed','You have already submitted feedback for this booking.','info'); closeModal('review-modal'); return; }
+
+            const { error: insertError } = await supabaseClient.from('reviews').insert({
+                booking_id: bookingId, provider_id: providerUserId, customer_id: currentUser.id,
+                customer_name: currentProfile.full_name, rating, comment, status: 'visible'
+            });
+            if(insertError) throw insertError;
+
+            await recalculateProviderRating(providerUserId);
+
+            await supabaseClient.from('notifications').insert({
+                user_id: providerUserId, title: 'New review received',
+                message: `${currentProfile.full_name} left you a review.`, type:'review_received',
+                booking_id: bookingId, is_read:false
+            });
+
+            closeModal('review-modal'); e.target.reset();
+            Swal.fire('Thank You!','Your review has been saved.','success');
+            await loadCustomerDashboard();
+            await renderProviders();
+        } catch(err){ showErrorAlert('Unable to submit review.', err); }
+        finally { btn.disabled=false; btn.innerText=original; }
+    }
+
+    async function recalculateProviderRating(providerUserId){
+        try {
+            const { data: reviews, error } = await supabaseClient.from('reviews').select('rating').eq('provider_id', providerUserId);
+            if(error) throw error;
+            const count = reviews.length;
+            const avg = count>0 ? reviews.reduce((s,r)=>s+Number(r.rating),0)/count : 0;
+            const { error: updateError } = await supabaseClient.from('providers').update({ rating: parseFloat(avg.toFixed(1)), reviews_count: count }).eq('user_id', providerUserId);
+            if(updateError) throw updateError;
+        } catch(err){ console.error(err); }
+    }
+
+    // ==================================================
+    // PROVIDER PROFILE EDITING (own providers row, matched by user_id)
+    // ==================================================
+    async function openEditProfileModal(){
+        try {
+            if(!currentProviderRecord) await loadCurrentProviderRecord();
+            const p = currentProviderRecord || {};
+            document.getElementById('edit-category').value = p.category || 'Electrician';
+            document.getElementById('edit-location').value = p.location || 'Karachi';
+            document.getElementById('edit-price').value = p.price || 1000;
+            document.getElementById('edit-experience').value = p.experience || '1 Year';
+            document.getElementById('edit-bio').value = p.bio || '';
+            const preview = document.getElementById('edit-photo-preview');
+            if(p.image_url){ preview.src = p.image_url; preview.classList.remove('hidden'); } else { preview.classList.add('hidden'); }
+            document.getElementById('edit-photo').value = '';
+            document.getElementById('edit-photo').onchange = (e)=>{
+                const file = e.target.files[0];
+                if(file){ preview.src = URL.createObjectURL(file); preview.classList.remove('hidden'); }
+            };
+            document.getElementById('edit-profile-modal').classList.remove('hidden');
+        } catch(err){ showErrorAlert('Unable to load your profile.', err); }
+    }
+
+    async function handleProfileUpdate(e){
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]'); const original = btn.innerText;
+        btn.disabled=true; btn.innerText='Saving...';
+        try {
+            const updates = {
+                category: document.getElementById('edit-category').value,
+                location: document.getElementById('edit-location').value,
+                price: parseFloat(document.getElementById('edit-price').value),
+                experience: document.getElementById('edit-experience').value,
+                bio: document.getElementById('edit-bio').value
+            };
+            const photoFile = document.getElementById('edit-photo').files[0];
+            if(photoFile){
+                updates.image_url = await uploadToBucket('provider-images', photoFile, currentUser.id);
+            }
+            const { error } = await supabaseClient.from('providers').update(updates).eq('user_id', currentUser.id);
+            if(error) throw error;
+            await loadCurrentProviderRecord();
+            closeModal('edit-profile-modal');
+            Swal.fire('Profile Updated','Your changes are now live.','success');
+            await renderProviders();
+        } catch(err){ showErrorAlert('Unable to save profile.', err); }
+        finally { btn.disabled=false; btn.innerText=original; }
+    }
+
+    // ==================================================
+    // NOTIFICATIONS — real Supabase Realtime (bell dropdown + toast)
+    // ==================================================
+    function initNotifications(){
+        const bellBtn = document.getElementById('bell-btn');
+        const dropdown = document.getElementById('notif-dropdown');
+        const markAllBtn = document.getElementById('mark-all-btn');
+        bellBtn.onclick = (e)=>{ e.stopPropagation(); dropdown.classList.toggle('hidden'); };
+        document.addEventListener('click', (e)=>{ if(!dropdown.contains(e.target) && e.target!==bellBtn && !bellBtn.contains(e.target)) dropdown.classList.add('hidden'); });
+        markAllBtn.onclick = markAllNotificationsRead;
+        loadInitialNotifications();
+        subscribeRealtime();
+    }
+
+    async function loadInitialNotifications(){
+        const { data, error } = await supabaseClient.from('notifications').select('*').eq('user_id', currentUser.id).order('created_at',{ascending:false}).limit(30);
+        if(error){ console.error(error); return; }
+        notifItems = data || [];
+        renderNotifications();
+    }
+
+    function subscribeRealtime(){
+        if(notifChannel) supabaseClient.removeChannel(notifChannel);
+        notifChannel = supabaseClient.channel(`notifications:${currentUser.id}`)
+            .on('postgres_changes', { event:'INSERT', schema:'public', table:'notifications', filter:`user_id=eq.${currentUser.id}` }, (payload)=>{
+                notifItems.unshift(payload.new); renderNotifications(); toastNotification(payload.new);
+            })
+            .on('postgres_changes', { event:'UPDATE', schema:'public', table:'notifications', filter:`user_id=eq.${currentUser.id}` }, (payload)=>{
+                const idx = notifItems.findIndex(n=>n.id===payload.new.id);
+                if(idx!==-1) notifItems[idx]=payload.new;
+                renderNotifications();
+            })
+            .subscribe();
+
+        if(bookingsChannel) supabaseClient.removeChannel(bookingsChannel);
+        const col = currentProfile.role==='provider' ? 'provider_id' : 'customer_id';
+        bookingsChannel = supabaseClient.channel(`bookings:${col}:${currentUser.id}`)
+            .on('postgres_changes', { event:'*', schema:'public', table:'bookings', filter:`${col}=eq.${currentUser.id}` }, async ()=>{
+                const page = getCurrentPage();
+                if(page==='customer-dashboard') await loadCustomerDashboard();
+                if(page==='provider-dashboard') await loadProviderDashboard();
+            })
+            .subscribe();
+    }
+
+    function teardownRealtime(){
+        if(notifChannel){ supabaseClient.removeChannel(notifChannel); notifChannel=null; }
+        if(bookingsChannel){ supabaseClient.removeChannel(bookingsChannel); bookingsChannel=null; }
+        notifItems=[];
+    }
+
+    function toastNotification(row){
+        Swal.fire({ toast:true, position:'top-end', icon:'info', title:row.title, text:row.message, showConfirmButton:false, timer:4500, timerProgressBar:true });
+    }
+    function timeAgo(iso){
+        const mins = Math.floor((Date.now()-new Date(iso).getTime())/60000);
+        if(mins<1) return 'Just now';
+        if(mins<60) return `${mins} min ago`;
+        const hrs = Math.floor(mins/60);
+        if(hrs<24) return `${hrs} hr ago`;
+        return `${Math.floor(hrs/24)} day(s) ago`;
+    }
+    function renderNotifications(){
+        const badge = document.getElementById('bell-badge');
+        const list = document.getElementById('notif-list');
+        const unread = notifItems.filter(n=>!n.is_read).length;
+        badge.classList.toggle('hidden', unread===0);
+        if(unread>0) badge.innerText = unread>9 ? '9+' : unread;
+        if(notifItems.length===0){ list.innerHTML = `<div class="p-6 text-center text-xs text-gray-400">No notifications yet.</div>`; return; }
+        list.innerHTML = notifItems.map(n=>`
+            <div data-id="${n.id}" class="notif-item flex gap-3 px-4 py-3 border-b border-gray-100 dark:border-slate-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700/50 ${n.is_read?'':'bg-primary-50 dark:bg-primary-950/30'}">
+                <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center flex-none">${NOTIF_ICONS[n.type]||'🔔'}</div>
+                <div class="min-w-0"><div class="text-sm font-semibold">${escapeHtml(n.title)}</div><div class="text-xs text-gray-500 dark:text-gray-400">${escapeHtml(n.message)}</div><div class="text-[10px] text-gray-400 mt-1">${timeAgo(n.created_at)}</div></div>
+            </div>`).join('');
+        list.querySelectorAll('.notif-item').forEach(el=>el.addEventListener('click',()=>markNotificationRead(el.dataset.id)));
+    }
+    async function markNotificationRead(id){
+        await supabaseClient.from('notifications').update({ is_read:true }).eq('id', id);
+        const item = notifItems.find(n=>n.id==id); if(item) item.is_read=true;
+        renderNotifications();
+    }
+    async function markAllNotificationsRead(){
+        const ids = notifItems.filter(n=>!n.is_read).map(n=>n.id);
+        if(ids.length===0) return;
+        await supabaseClient.from('notifications').update({ is_read:true }).in('id', ids);
+        notifItems.forEach(n=>n.is_read=true);
+        renderNotifications();
+    }
+
+    // ==================================================
+    // INIT
+    // ==================================================
+    window.addEventListener('DOMContentLoaded', async ()=>{
+        applyTheme();
+        renderNavbarAuth();
+        await Promise.all([renderCategories(), renderProviders()]);
+        await loadCurrentUserAndProfile();
+        renderNavbarAuth();
+    });
+</script>
 </body>
 </html>
